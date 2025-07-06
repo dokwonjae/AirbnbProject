@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: AirbnbProject
+
+  profiles:
+    active: dev
+
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+  devtools:
+    restart:
+      enabled: true
+
+  config:
+        import: optional:application-secret.yml
+
+server:
+  port: 8080
