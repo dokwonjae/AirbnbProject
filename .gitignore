@@ -1,0 +1,21 @@
+# Java
+*.class
+*.log
+
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea/
+*.iml
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# 민감 정보
+application-secret.yml
+
+# 기타
+out/
