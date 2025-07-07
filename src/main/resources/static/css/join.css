@@ -1,0 +1,66 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+}
+
+.main-content {
+    padding: 40px;
+}
+
+
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: #FF385C;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.msg {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    margin-left: 2px; /* ✅ 왼쪽 들여쓰기 추가 */
+}
