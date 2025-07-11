@@ -19,9 +19,10 @@ public class UserController {
 
     private final UserService userService; // 비즈니스 로직 처리 클래스 의존성 주입
 
-    @GetMapping("/join") // 회원가입 폼 페이지 요청
-    public String joinForm() {
-        return "join"; // join.jsp 뷰 반환
+    @GetMapping("/join")
+    public String joinForm(Model model) {
+        model.addAttribute("joinRequestDto", new JoinRequestDto());
+        return "join";
     }
 
     @PostMapping("/join") // 회원가입 폼 제출 처리
