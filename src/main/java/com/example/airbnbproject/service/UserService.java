@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Service // 이 클래스가 서비스 레이어 컴포넌트임을 명시 (비즈니스 로직 담당)
 @RequiredArgsConstructor // final 필드를 자동으로 생성자 주입 (userRepository 주입됨)
@@ -38,5 +39,18 @@ public class UserService {
 
         // DB에 저장
         userRepository.save(user);
+    }
+
+    public User login(String loginId, String password) {
+        Optional<User> optionalUser = userRepository.findByLoginId(loginId);
+        if (optionalUser.isEmpty()) return null;
+
+        User user = optionalUser.get();
+
+        // 암호화된 비밀번호 비교
+        String encryptedInput = SHA256.encrypt(password, user.getSalt());
+        if (!user.getPassword().equals(encryptedInput)) return null;
+
+        return user;
     }
 }
