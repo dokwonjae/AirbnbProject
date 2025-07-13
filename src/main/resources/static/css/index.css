@@ -1,0 +1,37 @@
+.category-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.category-item {
+    text-align: center;
+    color: #717171;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.category-item img {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.category-item:hover,
+.category-item.active {
+    color: #222;
+    font-weight: 700;
+}
+
+.category-item:hover img,
+.category-item.active img {
+    opacity: 1;
+}

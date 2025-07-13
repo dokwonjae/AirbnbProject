@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/join.css">
 </head>
 <body>
+<%@ include file="layout/header.jsp" %>
 
 <div class="main-content">
     <h2 class="title">회원가입</h2>
