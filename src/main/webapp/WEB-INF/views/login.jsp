@@ -25,5 +25,6 @@
 <c:if test="${not empty msg}">
     <div class="msg">${msg}</div>
 </c:if>
+
 </body>
 </html>
