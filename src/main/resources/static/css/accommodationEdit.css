@@ -1,0 +1,64 @@
+/* 수정 폼 스타일 - 등록보다 약간 더 절제된 느낌 */
+body {
+    background-color: #f0f2f5;
+    font-family: 'Helvetica Neue', sans-serif;
+    margin: 0;
+}
+
+.container {
+    max-width: 620px;
+    margin: 50px auto;
+    padding: 36px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+h1 {
+    font-size: 26px;
+    color: #333;
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 4px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    margin-top: 28px;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background-color: #43a047;
+}
+
+.alert {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 20px;
+}
