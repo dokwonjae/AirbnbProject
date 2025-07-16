@@ -3,57 +3,37 @@
 
 <html>
 <head>
-  <title>숙소 등록/수정</title>
+  <title>숙소 등록</title>
+  <link rel="stylesheet" href="/css/accommodationRegistration.css" />
 </head>
 <body>
 
-<h1><c:choose>
-  <c:when test="${not empty accommodation}">숙소 수정</c:when>
-  <c:otherwise>숙소 등록</c:otherwise>
-</c:choose></h1>
+<div class="container">
+  <h1>숙소 등록</h1>
 
-
-<c:if test="${not empty msg}">
-  <script>alert("${msg}");</script>
-</c:if>
-
-<!-- form 시작 -->
-<form method="post"
-      enctype="multipart/form-data"
-      action="<c:choose>
-                <c:when test='${not empty accommodation}'>/accommodation/update</c:when>
-                <c:otherwise>/accommodation/register</c:otherwise>
-              </c:choose>">
-
-
-  <c:if test="${not empty accommodation}">
-    <input type="hidden" name="id" value="${accommodation.id}" />
+  <!-- 등록 실패 메시지 -->
+  <c:if test="${not empty msg}">
+    <div class="alert">${msg}</div>
   </c:if>
 
-  <!-- 숙소명 -->
-  <label for="name">숙소 이름:</label><br/>
-  <input type="text" name="name" id="name" value="${accommodation.name}" required/><br/><br/>
+  <!-- 숙소 등록 폼 -->
+  <form method="post" action="/accommodation/register">
 
-  <!-- 가격 -->
-  <label for="price">숙박 가격:</label><br/>
-  <input type="number" name="price" id="price" value="${accommodation.price}" required/><br/><br/>
+    <label for="name">숙소 이름</label>
+    <input type="text" name="name" id="name" required />
 
-  <!-- 전망 종류 -->
-  <label for="view">전망 종류:</label><br/>
-  <input type="text" name="view" id="view" value="${accommodation.view}" required/><br/><br/>
+    <label for="price">숙박 가격</label>
+    <input type="number" name="price" id="price" required />
 
+    <label for="view">전망 설명</label>
+    <input type="text" name="view" id="view" />
 
-  <label for="image">대표 이미지 (JPG/PNG):</label><br/>
-  <input type="text" name="image" id="image" value="${accommodation.image}" required/><br/><br/>
+    <label for="image">대표 이미지 (URL)</label>
+    <input type="text" name="image" id="image" />
 
-
-  <button type="submit">
-    <c:choose>
-      <c:when test="${not empty accommodation}">수정하기</c:when>
-      <c:otherwise>등록하기</c:otherwise>
-    </c:choose>
-  </button>
-</form>
+    <button type="submit">등록하기</button>
+  </form>
+</div>
 
 </body>
 </html>
