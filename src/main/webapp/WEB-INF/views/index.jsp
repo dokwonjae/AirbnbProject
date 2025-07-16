@@ -12,14 +12,8 @@
 <body>
 <%@ include file="layout/header.jsp" %>
 
-<%--<c:if test="${not empty msg}">--%>
-<%--    <script>--%>
-<%--        alert("${msg}");--%>
-<%--    </script>--%>
-<%--</c:if>--%>
-
 <c:if test="${not empty msg}">
-    <div class="alert alert-warning">${msg}</div>
+    <script>alert("${msg}");</script>
 </c:if>
 
 <%
