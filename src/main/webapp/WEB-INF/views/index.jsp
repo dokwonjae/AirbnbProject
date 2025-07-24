@@ -37,7 +37,7 @@
 <div class="accommodation" style="display: flex; flex-wrap: wrap; margin: 0 100px;">
     <c:forEach var="accommodation" items="${accommodationData}">
         <div style="margin: 50px;">
-            <a href="/info?accommodationId=${accommodation.id}">
+            <a href="/accommodation/${accommodation.id}">
                 <img src="${accommodation.image}" style="border-radius: 20px; width: 450px; height: 450px;">
             </a>
             <div>${accommodation.name}</div>
