@@ -4,7 +4,6 @@ import com.example.airbnbproject.domain.Accommodation;
 import com.example.airbnbproject.domain.User;
 import com.example.airbnbproject.dto.AccommodationRequestDto;
 import com.example.airbnbproject.repository.AccommodationRepository;
-import com.example.airbnbproject.service.AccommodationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
