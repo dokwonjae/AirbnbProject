@@ -16,7 +16,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository; // 데이터베이스에 접근하는 레포지토리 의존성 주입
-    @Transactional // 에러 없으면 commit, 예외 터지면 rollback
+    @Transactional
     public void register(JoinRequestDto dto) {
         // loginId 중복 검사
         if (userRepository.findByLoginId(dto.getLoginId()).isPresent()) {

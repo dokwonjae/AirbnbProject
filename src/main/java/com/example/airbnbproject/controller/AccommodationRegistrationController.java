@@ -40,23 +40,21 @@ public class AccommodationRegistrationController {
 
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute AccommodationRequestDto dto,
+    public String register(@Valid @ModelAttribute("accommodationRequestDto") AccommodationRequestDto dto,
                            BindingResult bindingResult,
                            HttpSession session,
-                           RedirectAttributes ra,
-                           Model model) {
+                           Model model,
+                           RedirectAttributes ra) {
 
         User user = (User) session.getAttribute("user");
 
-        // 관리자 권한 확인
         if (user == null || user.getRole() != UserRole.ADMIN) {
             ra.addFlashAttribute("msg", "관리자만 숙소 등록이 가능합니다.");
             return "redirect:/";
         }
 
-        // 유효성 검사 실패 시 → 폼 다시 보여줌
         if (bindingResult.hasErrors()) {
-            model.addAttribute("msg", "입력값을 다시 확인해주세요.");
+            model.addAttribute("accommodationRequestDto", dto); // 입력값 유지
             return "accommodationRegistration";
         }
 
@@ -67,14 +65,14 @@ public class AccommodationRegistrationController {
                 return "redirect:/accommodation/register";
             }
 
-            // 등록 성공
             System.out.println("숙소 등록 성공: " + accommodation.getId());
             return "redirect:/info?accommodationId=" + accommodation.getId();
 
         } catch (Exception e) {
-            e.printStackTrace(); // 서버 로그 확인용
+            e.printStackTrace();
             ra.addFlashAttribute("msg", "서버 오류로 등록에 실패했습니다.");
             return "redirect:/accommodation/register";
         }
     }
+
 }
