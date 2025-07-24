@@ -36,6 +36,9 @@ public class Accommodation {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(mappedBy = "accommodation", fetch = FetchType.LAZY)
+    private AccommodationInfo accommodationInfo;
+
     public static Accommodation of(AccommodationRequestDto dto, User user) {
         Accommodation a = new Accommodation();
         a.setName(dto.getName());
