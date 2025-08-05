@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginCheckInterceptor)
-                .addPathPatterns("/info/**", "/reservation/**", "/mypage/**")  // 로그인 필요한 페이지
+                .addPathPatterns("/info/**", "/reservation/**", "/mypage/**","/admin/**","/payment/**")  // 로그인 필요한 페이지
                 .excludePathPatterns("/", "/login", "/join", "/css/**", "/images/**", "/js/**"); // 예외 허용
     }
 }
