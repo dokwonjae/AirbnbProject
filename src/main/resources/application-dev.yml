@@ -13,3 +13,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  kakaopay:
+    host: https://open-api.kakaopay.com/online
+    secret-key: DEV97B7D5BCBF6859048A5CB455076E7732C7098
+    cid: TC0ONETIME
+    approval-url: http://localhost:8080/payment/success
+    cancel-url: http://localhost:8080/payment/cancel
+    fail-url: http://localhost:8080/payment/fail
