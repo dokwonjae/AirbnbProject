@@ -132,5 +132,6 @@ public class AccommodationInfoManageController {
 
         accommodationInfoService.delete(infoId);
         return "redirect:/accommodation/" + accommodationId;
+
     }
 }
