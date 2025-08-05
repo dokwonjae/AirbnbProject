@@ -8,8 +8,38 @@
     <title>${info.title} - 숙소 상세</title>
     <link rel="stylesheet" type="text/css" href="/css/accommodationInfo.css">
 </head>
-<body>
 
+<script>
+    document.querySelector("#reservationForm").addEventListener("submit", function(e) {
+        const checkInInput = document.querySelector("input[name='checkIn']");
+        const checkOutInput = document.querySelector("input[name='checkOut']");
+
+        const checkIn = new Date(checkInInput.value);
+        const checkOut = new Date(checkOutInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 시간 제거
+
+        if (checkIn < today) {
+            alert("체크인 날짜는 오늘 이후여야 합니다.");
+            e.preventDefault();
+            return;
+        }
+
+        if (checkOut <= checkIn) {
+            alert("체크아웃 날짜는 체크인 날짜 이후여야 합니다.");
+            e.preventDefault();
+            return;
+        }
+
+        if (checkOut < today) {
+            alert("체크아웃 날짜는 오늘 이후여야 합니다.");
+            e.preventDefault();
+        }
+    });
+</script>
+
+
+<body>
 <%@ include file="layout/header.jsp" %>
 
 <c:if test="${param.error == 'infoExists'}">
@@ -19,10 +49,13 @@
 <div class="container">
 
     <c:if test="${info == null}">
-        <c:set var="accommodationId" value="${accommodation.id}"/>
-        <p>accommodation.id: ${accommodation.id}</p>
-        <a href="/info/register?accommodationId=${accommodationId}" class="btn">상세정보 등록하기</a>
+        <c:if test="${sessionScope.user != null
+                 && sessionScope.user.id == accommodation.user.id
+                 && accommodation.status == 'PENDING'}">
+            <a href="/info/register?accommodationId=${accommodation.id}" class="btn">상세정보 등록</a>
+        </c:if>
     </c:if>
+
 
     <!-- ✅ 수정/삭제 버튼: 로그인한 사용자 == 숙소 등록자일 때만 노출 -->
     <c:if test="${sessionScope.user != null && sessionScope.user.id == accommodation.user.id}">
@@ -30,7 +63,8 @@
             <form method="get" action="/info/edit/${info.id}" style="display:inline;">
                 <button type="submit">수정</button>
             </form>
-            <form method="post" action="/info/delete/${info.id}" onsubmit="return confirm('정말 삭제하시겠습니까?');" style="display:inline;">
+            <form method="post" action="/info/delete/${info.id}" onsubmit="return confirm('정말 삭제하시겠습니까?');"
+                  style="display:inline;">
                 <button type="submit">삭제</button>
             </form>
         </div>
@@ -79,6 +113,28 @@
             <h3>위치</h3>
             <p>${info.location}, 제주도, 한국</p>
         </div>
+
+        <!-- ✅ 예약 영역: 숙소 상태 APPROVED이고 로그인한 사용자만 예약 가능 -->
+        <c:if test="${sessionScope.user != null && accommodation.status == 'APPROVED'}">
+            <div class="reservation-box">
+                <form id="reservationForm" action="/reservation" method="post">
+                    <input type="hidden" name="accommodationId" value="${accommodation.id}">
+
+                    <label>체크인 날짜</label>
+                    <input type="date" name="checkIn" required>
+
+                    <label>체크아웃 날짜</label>
+                    <input type="date" name="checkOut" required>
+
+                    <label>인원수</label>
+                    <input type="number" name="guestCount" min="1" required>
+
+                    <button type="submit">예약하기</button>
+                </form>
+
+            </div>
+        </c:if>
+
     </c:if>
 
 </div>

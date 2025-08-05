@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/css/accommodationRegistration.css"/>
 </head>
 <body>
+<%@ include file="layout/header.jsp" %>
+
 
 <div class="container">
     <h1>숙소 등록</h1>

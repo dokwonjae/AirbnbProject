@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="/css/accommodationEdit.css" />
 </head>
 <body>
+<%@ include file="layout/header.jsp" %>
+
 <div class="container">
   <h1>숙소 정보 수정</h1>
 
