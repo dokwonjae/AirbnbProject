@@ -7,6 +7,7 @@
     <title>숙소 상세 정보</title>
 </head>
 <body>
+<%@ include file="layout/header.jsp" %>
 
 <div class="container">
     <h1>

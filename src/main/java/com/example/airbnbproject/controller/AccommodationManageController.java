@@ -4,6 +4,7 @@ import com.example.airbnbproject.domain.Accommodation;
 import com.example.airbnbproject.domain.User;
 import com.example.airbnbproject.dto.AccommodationRequestDto;
 import com.example.airbnbproject.repository.AccommodationRepository;
+import com.example.airbnbproject.service.AccommodationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpSession;
 public class AccommodationManageController {
 
     private final AccommodationRepository accommodationRepository;
+    private final AccommodationService accommodationService;
 
     // 수정 폼 띄우기
     @GetMapping("/edit")
@@ -57,21 +59,21 @@ public class AccommodationManageController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam Long id,
-                         HttpSession session,
-                         RedirectAttributes ra) {
-
+    public String requestDelete(@RequestParam Long id,
+                                HttpSession session,
+                                RedirectAttributes ra) {
         User user = (User) session.getAttribute("user");
-        Accommodation accommodation = accommodationRepository.findById(id).orElse(null);
 
-        if (accommodation == null || user == null || !accommodation.getUser().getId().equals(user.getId())) {
-            ra.addFlashAttribute("msg", "삭제 권한이 없거나 숙소가 존재하지 않습니다.");
-            return "redirect:/myPage";
+        if (user == null) {
+            ra.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
         }
 
-        accommodationRepository.delete(accommodation);
-        ra.addFlashAttribute("msg", "숙소가 성공적으로 삭제되었습니다.");
+        accommodationService.requestDelete(id, user);
+        ra.addFlashAttribute("msg", "숙소 삭제 요청이 접수되었습니다.");
         return "redirect:/myPage";
     }
+
+
 
 }
