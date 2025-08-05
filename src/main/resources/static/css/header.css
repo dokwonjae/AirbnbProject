@@ -1,38 +1,53 @@
 .header-container {
+    height: 80px; /* 🔒 고정 높이 */
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    border-bottom: 1px solid #ccc;
+    align-items: center; /* 🔒 수직 중앙 정렬 */
+    padding: 0 40px; /* 🔒 위아래 여백 제거, 좌우만 */
     background-color: white;
+    border-bottom: 1px solid #ddd;
+    font-family: 'Noto Sans KR', sans-serif;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
 }
 
 .logo img {
-    height: 50px;
+    height: 38px; /* 🔒 고정 */
 }
 
 .search-form {
-    flex: 1;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
+    height: 40px; /* 🔒 딱 맞는 높이 */
+    width: 400px;
+    max-width: 100%;
+    padding: 0 12px; /* 🔒 내부 여백 최소화 */
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: white;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.search-form input {
-    width: 350px;
-    height: 40px;
-    border-radius: 30px;
-    border: 1px solid #ddd;
-    padding: 0 15px;
+.search-form input[type="text"] {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    font-size: 14px;
+    padding: 0 8px;
+    height: 100%;
+    background: none;
+    box-sizing: border-box;
 }
 
 .search-form button {
-    margin-left: 10px;
-    background-color: #ff385c;
+    background-color: #FF385C;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,60 +56,58 @@
 
 .airbnb-msg {
     font-size: 14px;
-    font-weight: 500;
-    margin: 0 20px;
+    color: #222;
     white-space: nowrap;
+    margin-left: 24px;
 }
 
 .user-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
-.dropdown-wrap {
+.menu {
     position: relative;
 }
 
 .dropdown-btn {
+    background: none;
+    border: none;
     cursor: pointer;
 }
 
 .dropdown-menu {
-    display: none;
     position: absolute;
-    top: 35px;
+    top: 100%;
     right: 0;
-    background: white;
+    background-color: white;
     border: 1px solid #ccc;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    padding: 10px 0;
-    list-style: none;
-    z-index: 999;
-    min-width: 120px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 8px 0;
     border-radius: 8px;
-}
-
-.dropdown-menu.show {
-    display: block;
+    display: none;
+    z-index: 10;
+    width: 160px;
 }
 
 .dropdown-menu li {
-    padding: 10px 20px;
+    list-style: none;
+    padding: 10px 16px;
 }
 
 .dropdown-menu li a,
 .dropdown-menu li button {
-    color: #333;
     text-decoration: none;
+    color: #333;
     background: none;
     border: none;
-    cursor: pointer;
     font-size: 14px;
     width: 100%;
     text-align: left;
+    cursor: pointer;
 }
 
-.dropdown-menu li:hover {
-    background-color: #f5f5f5;
+.dropdown-menu.show {
+    display: block;
 }

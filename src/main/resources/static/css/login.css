@@ -1,54 +1,53 @@
-body {
-    font-family: 'Arial', sans-serif;
-    padding: 40px;
+
+.login-container {
     background-color: #f8f8f8;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
 }
 
-.title {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-form {
+.login-box {
+    width: 100%;
     max-width: 400px;
-    margin: 0 auto;
     background: white;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.form-group {
+.login-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.login-form-group {
     margin-bottom: 15px;
 }
 
-label {
+.login-label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-input[type="text"], input[type="password"] {
+.login-input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
 }
 
-button {
-    margin-top: 15px;
-    padding: 10px 15px;
-    background-color: #FF385C;
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #FF5A5F;
     border: none;
     color: white;
-    font-weight: bold;
-    border-radius: 5px;
+    border-radius: 4px;
+    font-size: 16px;
     cursor: pointer;
-    width: 100%;
-}
-
-.msg {
-    color: red;
-    margin-top: 10px;
-    text-align: center;
 }

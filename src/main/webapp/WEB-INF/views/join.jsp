@@ -6,6 +6,8 @@
 <head>
     <title>회원가입</title>
     <link rel="stylesheet" href="/css/join.css">
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
+
 </head>
 <body>
 <%@ include file="layout/header.jsp" %>
