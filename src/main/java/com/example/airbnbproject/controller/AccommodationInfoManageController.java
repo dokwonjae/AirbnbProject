@@ -25,25 +25,19 @@ public class AccommodationInfoManageController {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationInfoService accommodationInfoService;
 
-    // 등록 폼
+    // 등록 폼 (소유자만 접근)
     @GetMapping("/register")
     public String showRegisterForm(@RequestParam Long accommodationId, Model model, HttpSession session) {
-        // 로그인 여부 확인
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login?error=needLogin";
-        }
+        User user = (User) session.getAttribute("user"); // 로그인은 인터셉터가 보장
 
-        // 숙소 정보 조회
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 숙소입니다."));
 
-        // 등록자 본인만 접근 가능
-        if (!accommodation.getUser().getId().equals(user.getId())) {
+        boolean isOwner = accommodation.getUser().getId().equals(user.getId());
+        if (!isOwner) {
             return "redirect:/accommodation/" + accommodationId + "?error=notOwner";
         }
 
-        // 이미 상세 정보가 있는 경우
         if (accommodation.getAccommodationInfo() != null) {
             return "redirect:/accommodation/" + accommodationId + "?error=infoExists";
         }
@@ -53,32 +47,47 @@ public class AccommodationInfoManageController {
         return "accommodationInfoForm";
     }
 
-
-    // 등록 처리
+    // 등록 처리 (소유자만 가능)
     @PostMapping("/register")
     public String register(@RequestParam Long accommodationId,
                            @Valid @ModelAttribute AccommodationInfoRequestDto dto,
                            BindingResult bindingResult,
-                           Model model) throws IOException {
-        Accommodation accommodation = accommodationRepository.findById(accommodationId).orElse(null);
+                           Model model,
+                           HttpSession session) throws IOException {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("accommodationId", accommodationId);
             return "accommodationInfoForm";
         }
 
-        accommodationInfoService.saveAccommodationInfo(dto, accommodation);
-        return "redirect:/accommodation/" + accommodationId;
+        User user = (User) session.getAttribute("user");
+
+        Accommodation accommodation = accommodationRepository.findById(accommodationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 숙소입니다."));
+
+        boolean isOwner = accommodation.getUser().getId().equals(user.getId());
+        if (!isOwner) {
+            return "redirect:/accommodation/" + accommodationId + "?error=notOwner";
+        }
+
+        try {
+            accommodationInfoService.saveAccommodationInfo(dto, accommodation);
+            return "redirect:/accommodation/" + accommodationId;
+        } catch (IllegalArgumentException ex) {
+            bindingResult.reject("saveInfoError", ex.getMessage());
+            model.addAttribute("accommodationId", accommodationId);
+            return "accommodationInfoForm";
+        }
     }
 
-    // 수정 폼
+    // 수정 폼 (소유자만 접근)
     @GetMapping("/edit/{infoId}")
     public String showEditForm(@PathVariable Long infoId, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         AccommodationInfo info = accommodationInfoService.findById(infoId);
 
-        // 🔐 등록자 확인
-        if (!info.getAccommodation().getUser().getId().equals(user.getId())) {
+        boolean isOwner = info.getAccommodation().getUser().getId().equals(user.getId());
+        if (!isOwner) {
             return "redirect:/accommodation/" + info.getAccommodation().getId() + "?error=notOwner";
         }
 
@@ -89,7 +98,7 @@ public class AccommodationInfoManageController {
         return "accommodationInfoForm";
     }
 
-    // 수정 처리
+    // 수정 처리 (소유자만 가능)
     @PostMapping("/edit/{infoId}")
     public String edit(@PathVariable Long infoId,
                        @Valid @ModelAttribute AccommodationInfoRequestDto dto,
@@ -100,8 +109,8 @@ public class AccommodationInfoManageController {
         AccommodationInfo info = accommodationInfoService.findById(infoId);
         Long accommodationId = info.getAccommodation().getId();
 
-        // 🔐 등록자 확인
-        if (!info.getAccommodation().getUser().getId().equals(user.getId())) {
+        boolean isOwner = info.getAccommodation().getUser().getId().equals(user.getId());
+        if (!isOwner) {
             return "redirect:/accommodation/" + accommodationId + "?error=notOwner";
         }
 
@@ -111,11 +120,18 @@ public class AccommodationInfoManageController {
             return "accommodationInfoForm";
         }
 
-        accommodationInfoService.update(infoId, dto);
-        return "redirect:/accommodation/" + accommodationId;
+        try {
+            accommodationInfoService.update(infoId, dto);
+            return "redirect:/accommodation/" + accommodationId;
+        } catch (IllegalArgumentException ex) {
+            bindingResult.reject("updateInfoError", ex.getMessage());
+            model.addAttribute("accommodationId", accommodationId);
+            model.addAttribute("editing", true);
+            return "accommodationInfoForm";
+        }
     }
 
-
+    // 삭제 (소유자 또는 ADMIN 가능)
     @PostMapping("/delete/{infoId}")
     public String delete(@PathVariable Long infoId, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -125,13 +141,11 @@ public class AccommodationInfoManageController {
         boolean isOwner = info.getAccommodation().getUser().getId().equals(user.getId());
         boolean isAdmin = user.getRole() == UserRole.ADMIN;
 
-        // 🔐 관리자 or 등록자만 가능
         if (!isOwner && !isAdmin) {
             return "redirect:/accommodation/" + accommodationId + "?error=notAuthorized";
         }
 
         accommodationInfoService.delete(infoId);
         return "redirect:/accommodation/" + accommodationId;
-
     }
 }

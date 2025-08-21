@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -26,8 +28,9 @@ public class AccommodationInfoRequestDto {
     @Size(max = 100, message = "부제목은 100자 이하로 작성해주세요.")
     private String subTitle;
 
-    @NotBlank(message = "숙박 인원은 필수입니다.")
-    private String personnel;
+    @NotNull
+    @Min(1)
+    private Integer  personnel;
 
     @Size(max = 255, message = "편의시설 설명은 255자 이하로 작성해주세요.")
     private String amenities;

@@ -39,11 +39,9 @@ public class Accommodation {
     @OneToOne(mappedBy = "accommodation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private AccommodationInfo accommodationInfo;
 
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccommodationStatus status = AccommodationStatus.PENDING;
-
 
     public static Accommodation of(AccommodationRequestDto dto, User user) {
         Accommodation a = new Accommodation();

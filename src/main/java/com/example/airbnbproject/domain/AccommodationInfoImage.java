@@ -23,7 +23,7 @@ public class AccommodationInfoImage {
     private byte[] imageData;
 
     @Column(length = 1000)
-    private String imageUrl; // URL 또는 null
+    private String imageUrl;
 
     private int priority;
 
