@@ -14,24 +14,28 @@
     <h1>예약 상세</h1>
 
     <div>
-        <p><strong>숙소:</strong> ${reservation.accommodation.name}</p>
-        <p>체크인 날짜: ${reservation.checkIn}</p>
-        <p>체크아웃 날짜: ${reservation.checkOut}</p>
-        <p><strong>총 가격:</strong>
+        <p><strong>숙소명:</strong> <c:out value="${reservation.accommodationName}"/></p>
+        <p><strong>체크인:</strong> <c:out value="${reservation.checkIn}"/></p>
+        <p><strong>체크아웃:</strong> <c:out value="${reservation.checkOut}"/></p>
+        <p><strong>인원:</strong> <c:out value="${reservation.guestCount}"/>명</p>
+        <p><strong>총 금액:</strong>
             <fmt:formatNumber value="${reservation.totalAmount}" type="number"/>원
         </p>
-        <p><strong>인원:</strong> ${reservation.guestCount}명</p>
-        <p><strong>예약 상태:</strong> ${reservation.status}</p>
-        <p><strong>총 결제 금액:</strong>
-            <fmt:formatNumber value="${reservation.totalAmount}" type="number"/>원
-        </p>
+        <p><strong>상태:</strong> <c:out value="${reservation.status}"/></p>
     </div>
 
-    <form method="post" action="/payment/kakao">
-        <input type="hidden" name="reservationId" value="${reservation.id}"/>
-        <input type="hidden" name="amount" value="${reservation.totalAmount}"/>
-        <button type="submit" class="btn">카카오페이로 결제</button>
-    </form>
+    <!-- ✅ RESERVED 상태에서만 결제 버튼 노출 -->
+    <c:if test="${reservation.status == 'RESERVED'}">
+        <form method="post" action="/payment/kakao">
+            <input type="hidden" name="reservationId" value="${reservation.id}"/>
+            <button type="submit" class="btn">카카오페이로 결제</button>
+        </form>
+    </c:if>
+
+    <!-- 이미 결제 완료면 안내 -->
+    <c:if test="${reservation.status == 'PAID'}">
+        <div class="alert">이미 결제 완료된 예약입니다.</div>
+    </c:if>
 </div>
 
 </body>

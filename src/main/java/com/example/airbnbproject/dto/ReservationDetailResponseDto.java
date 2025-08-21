@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-public class ReservationDetailDto {
+public class ReservationDetailResponseDto {
 
     private final Long id;
 
@@ -23,7 +23,7 @@ public class ReservationDetailDto {
     private final int totalAmount;     // 총 금액(예약 시점 계산값)
     private final String status;       // RESERVED/PAID 등
 
-    public ReservationDetailDto(Reservation res) {
+    public ReservationDetailResponseDto(Reservation res) {
         this.id = res.getId();
 
         this.accommodationId = res.getAccommodation().getId();

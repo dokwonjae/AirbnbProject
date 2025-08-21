@@ -19,6 +19,19 @@
     <p><strong>이메일:</strong> ${user.email}</p>
 </section>
 
+<section class="mypage-section">
+    <h2>⚙️ 계정 관리</h2>
+
+    <div style="margin-bottom:12px;">
+        <a class="register-btn" href="/account/contact">연락처 변경</a>
+        <a class="register-btn" href="/account/password">비밀번호 변경</a>
+    </div>
+
+    <form method="get" action="/account/delete">
+        <button type="submit" class="danger-btn">회원 탈퇴</button>
+    </form>
+</section>
+
 <!-- 2. 예약 내역 -->
 <section class="mypage-section">
     <h2>📅 예약 내역</h2>
@@ -34,7 +47,7 @@
         <tbody>
         <c:forEach var="reservation" items="${myReservations}">
             <tr>
-                <td>${reservation.accommodation.name}</td>
+                <td>${reservation.accommodationName}</td>
                 <td>
                     <c:out value="${reservation.checkIn}" /> ~
                     <c:out value="${reservation.checkOut}" />
