@@ -16,8 +16,19 @@ spring:
 
   kakaopay:
     host: https://open-api.kakaopay.com/online
-    secret-key: DEV97B7D5BCBF6859048A5CB455076E7732C7098
+    secret-key: ${KAKAO_SECRET_KEY}
     cid: TC0ONETIME
     approval-url: http://localhost:8080/payment/success
     cancel-url: http://localhost:8080/payment/cancel
     fail-url: http://localhost:8080/payment/fail
+
+  redis:
+    host: localhost
+    port: 6379
+
+redisson:
+  address: redis://localhost:6379
+  # password: ${REDIS_PASSWORD:}
+  lock:
+    lease-seconds: 5   # 락 자동 해제 시간 (임계영역이 5초 넘으면 늘리기)
+    wait-seconds: 3    # 락 대기 최대 시간

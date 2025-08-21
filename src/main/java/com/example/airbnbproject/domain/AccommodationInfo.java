@@ -30,16 +30,18 @@ public class AccommodationInfo {
     @Column(length = 100)
     private String subTitle;
 
-    @Column(length = 50)
-    private String personnel;
+    @Column(nullable = false)
+    private int personnel;
 
     @Column(length = 255)
     private String amenities;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accommodation_id", nullable = false)
+    @JoinColumn(name = "accommodation_id", nullable = false, unique = true)
     private Accommodation accommodation;
 
     @OneToMany(mappedBy = "accommodationInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("priority ASC, id ASC")
     private List<AccommodationInfoImage> images = new ArrayList<>();
+
 }

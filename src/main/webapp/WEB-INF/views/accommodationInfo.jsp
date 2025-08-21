@@ -2,42 +2,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <title>${info.title} - 숙소 상세</title>
     <link rel="stylesheet" type="text/css" href="/css/accommodationInfo.css">
+
+    <!-- 달력(Flatpickr) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
-
-<script>
-    document.querySelector("#reservationForm").addEventListener("submit", function(e) {
-        const checkInInput = document.querySelector("input[name='checkIn']");
-        const checkOutInput = document.querySelector("input[name='checkOut']");
-
-        const checkIn = new Date(checkInInput.value);
-        const checkOut = new Date(checkOutInput.value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // 시간 제거
-
-        if (checkIn < today) {
-            alert("체크인 날짜는 오늘 이후여야 합니다.");
-            e.preventDefault();
-            return;
-        }
-
-        if (checkOut <= checkIn) {
-            alert("체크아웃 날짜는 체크인 날짜 이후여야 합니다.");
-            e.preventDefault();
-            return;
-        }
-
-        if (checkOut < today) {
-            alert("체크아웃 날짜는 오늘 이후여야 합니다.");
-            e.preventDefault();
-        }
-    });
-</script>
-
 
 <body>
 <%@ include file="layout/header.jsp" %>
@@ -56,8 +32,7 @@
         </c:if>
     </c:if>
 
-
-    <!-- ✅ 수정/삭제 버튼: 로그인한 사용자 == 숙소 등록자일 때만 노출 -->
+    <!-- 수정/삭제 버튼 -->
     <c:if test="${sessionScope.user != null && sessionScope.user.id == accommodation.user.id}">
         <div style="margin-top: 20px;">
             <form method="get" action="/info/edit/${info.id}" style="display:inline;">
@@ -70,74 +45,134 @@
         </div>
     </c:if>
 
-
     <c:if test="${info != null}">
-
         <h1>${info.title}</h1>
         <div class="subtitle">${info.location}</div>
 
         <div class="detail-grid">
-
-                <%-- 🖼️ 이미지 갤러리 --%>
             <div class="image-gallery">
                 <c:forEach var="img" items="${imagePaths}">
-                    <c:choose>
-                        <c:when test="${fn:startsWith(img, 'data:image/')}">
-                            <img src="${img}" alt="숙소 이미지"/>
-                        </c:when>
-                        <c:otherwise>
-                            <img src="${img}" alt="숙소 이미지"/>
-                        </c:otherwise>
-                    </c:choose>
+                    <img src="${img}" alt="숙소 이미지" loading="lazy"/>
                 </c:forEach>
             </div>
 
-                <%-- 📝 텍스트 정보 --%>
+                <%-- 텍스트 정보 --%>
             <div class="accommodation-info">
                 <div><span class="info-label">부제목:</span>${info.subTitle}</div>
                 <div><span class="info-label">인원:</span>${info.personnel}</div>
-                <div><span class="info-label">가격:</span><fmt:formatNumber value="${accommodation.price}" type="number"/>원
-                </div>
+                <div><span class="info-label">가격:</span><fmt:formatNumber value="${accommodation.price}" type="number"/>원</div>
                 <div><span class="info-label">뷰:</span>${accommodation.view}</div>
             </div>
         </div>
 
-        <%-- 🧺 편의시설 섹션 --%>
+        <%-- 편의시설 --%>
         <div class="info-section">
             <h3>편의시설</h3>
             <p>${info.amenities}</p>
         </div>
 
-        <%-- 🌍 위치 정보 --%>
+        <%-- 위치 --%>
         <div class="info-section">
             <h3>위치</h3>
             <p>${info.location}, 제주도, 한국</p>
         </div>
 
-        <!-- ✅ 예약 영역: 숙소 상태 APPROVED이고 로그인한 사용자만 예약 가능 -->
-        <c:if test="${sessionScope.user != null && accommodation.status == 'APPROVED'}">
+        <!-- 예약 영역: 승인된 숙소만 -->
+        <c:if test="${accommodation.status == 'APPROVED'}">
             <div class="reservation-box">
-                <form id="reservationForm" action="/reservation" method="post">
-                    <input type="hidden" name="accommodationId" value="${accommodation.id}">
 
-                    <label>체크인 날짜</label>
-                    <input type="date" name="checkIn" required>
+                <!-- ✅ 글로벌 에러(서비스/컨트롤러에서 reject(...)한 것) -->
 
-                    <label>체크아웃 날짜</label>
-                    <input type="date" name="checkOut" required>
+                <!-- ✅ Spring Form으로 변경 -->
+                <form:form id="reservationForm" method="post" action="/reservation" modelAttribute="reservationRequestDto">
+
+                    <!-- 글로벌/객체 에러 -->
+                    <form:errors cssClass="error" element="div"/>
+                    <form:errors path="dateRangeValid" cssClass="error"/>
+
+                    <form:hidden path="accommodationId"/>
+                    <form:hidden path="checkIn"  id="checkInHidden"/>
+                    <form:hidden path="checkOut" id="checkOutHidden"/>
+
+                    <label>예약 날짜</label>
+                    <input id="dateRange" type="text" placeholder="체크인 ~ 체크아웃"/>
+
+                    <!-- 날짜 필드 에러 -->
+                    <form:errors path="checkIn"  cssClass="error"/>
+                    <form:errors path="checkOut" cssClass="error"/>
 
                     <label>인원수</label>
-                    <input type="number" name="guestCount" min="1" required>
+                    <form:input path="guestCount" type="number" min="1"/>
+                    <form:errors path="guestCount" cssClass="error"/>
 
                     <button type="submit">예약하기</button>
-                </form>
+                </form:form>
 
             </div>
         </c:if>
-
     </c:if>
-
 </div>
+
+<script>
+    const ACC_ID = "${accommodation.id}";
+
+    const fp = flatpickr("#dateRange", {
+        mode: "range",
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        onChange(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                const fmt = d => instance.formatDate(d, "Y-m-d");
+                document.getElementById("checkInHidden").value  = fmt(selectedDates[0]);
+                document.getElementById("checkOutHidden").value = fmt(selectedDates[1]);
+            }
+        },
+        // ✅ 반드시 instance를 넘겨 호출해야 함
+        onReady(_, __, instance)       { refreshDisabled(instance); },
+        onMonthChange(_, __, instance) { refreshDisabled(instance); },
+        onYearChange(_, __, instance)  { refreshDisabled(instance); }
+    });
+
+    async function refreshDisabled(instance){
+        const y = instance.currentYear;
+        const m = instance.currentMonth; // 0~11
+        const from = new Date(y, m, 1);
+        const to   = new Date(y, m + 2, 0); // 다음 달 말일
+
+        const toIso = d => new Date(d.getTime() - d.getTimezoneOffset()*60000)
+            .toISOString().slice(0,10);
+
+        const url = '/reservation/accommodation/' + ACC_ID
+            + '/booked?from=' + toIso(from)
+            + '&to=' + toIso(to);
+
+        try {
+            const res = await fetch(url);
+            const ranges = await res.json();  // [{from:"2025-08-11",to:"2025-08-12"}, ...]
+
+            // 👉 범위를 하루 단위 배열로 풀어서 확실히 비활성화
+            const disabledDays = [];
+            ranges.forEach(r => {
+                let cur = new Date(r.from + 'T00:00:00');
+                const end = new Date(r.to   + 'T00:00:00');
+                while (cur <= end) {
+                    const y = cur.getFullYear();
+                    const m = String(cur.getMonth()+1).padStart(2,'0');
+                    const d = String(cur.getDate()).padStart(2,'0');
+                    disabledDays.push(y + '-' + m + '-' + d); // ✅ 혹은 [''+y, m, d].join('-')
+                    cur.setDate(cur.getDate()+1);
+                }
+            });
+
+            instance.set('disable', disabledDays);
+            console.log('disabledDays', disabledDays);
+        } catch (e) {
+            console.warn('예약 불가 날짜 불러오기 실패', e);
+        }
+    }
+</script>
+
+
 
 </body>
 </html>

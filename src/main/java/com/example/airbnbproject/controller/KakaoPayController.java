@@ -1,13 +1,13 @@
 package com.example.airbnbproject.controller;
 
 import com.example.airbnbproject.domain.User;
+import com.example.airbnbproject.dto.KakaoPayApproveFormDto;
+import com.example.airbnbproject.dto.KakaoPayApproveResponseDto;
+import com.example.airbnbproject.dto.KakaoPayRequestDto;
 import com.example.airbnbproject.service.KakaoPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
@@ -20,11 +20,11 @@ public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
 
     @PostMapping("/kakao")
-    public String kakaoPay(@RequestParam Long reservationId,
-                           @RequestParam int amount,
+    public String kakaoPay(@ModelAttribute KakaoPayRequestDto dto,
                            HttpSession session) {
         User user = (User) session.getAttribute("user");
-        String redirectUrl = kakaoPayService.kakaoPayReady(reservationId, user.getId().toString(), amount, session);
+
+        String redirectUrl = kakaoPayService.kakaoPayReady(dto, user.getId().toString(), session);
         return "redirect:" + redirectUrl;
     }
 
@@ -34,13 +34,19 @@ public class KakaoPayController {
     public String kakaoPaySuccess(@RequestParam("pg_token") String pgToken,
                                   @RequestParam("reservationId") String reservationId,
                                   HttpSession session,
-                                  RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
+                                  RedirectAttributes ra) {
 
-        kakaoPayService.kakaoPayApprove(pgToken, reservationId.toString(), user.getId().toString(), session);
-        redirectAttributes.addFlashAttribute("message", "결제가 성공적으로 완료되었습니다!");
-        return "redirect:/mypage/reservation/" + reservationId;
+        User user = (User) session.getAttribute("user");
+
+        // 콜백 파라미터를 폼 DTO로 묶기
+        KakaoPayApproveFormDto form = KakaoPayApproveFormDto.of(pgToken, reservationId);
+
+        // 서비스는 폼 DTO를 받아서 카카오 요청/응답 DTO로 변환·호출
+        KakaoPayApproveResponseDto resp =
+                kakaoPayService.kakaoPayApprove(form, user.getId().toString(), session);
+
+        ra.addFlashAttribute("message", "결제가 성공적으로 완료되었습니다!");
+        return "redirect:/reservation/" + reservationId;
     }
 
     @GetMapping("/cancel")

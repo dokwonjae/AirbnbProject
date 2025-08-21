@@ -15,6 +15,10 @@
 <div class="main-content">
     <h2 class="title">회원가입</h2>
 
+    <c:if test="${not empty msg}">
+        <div class="msg">${msg}</div>
+    </c:if>
+
     <form:form method="post" modelAttribute="joinRequestDto" action="/join">
         <div class="form-group">
             <label for="loginId">아이디</label>
@@ -42,10 +46,6 @@
 
         <button type="submit">가입하기</button>
     </form:form>
-
-    <c:if test="${not empty msg}">
-        <div class="msg">${msg}</div>
-    </c:if>
 </div>
 
 </body>

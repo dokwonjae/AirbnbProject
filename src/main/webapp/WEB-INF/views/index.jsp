@@ -8,13 +8,11 @@
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <link rel="stylesheet" type="text/css" href="/css/header.css">
 
-<%--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">--%>
-
 </head>
 <body>
 <%@ include file="layout/header.jsp" %>
 
-<c:if test="${not empty msg}">
+<c:if test="${not empty msg and msg ne '로그인 성공'}">
     <script>alert("${msg}");</script>
 </c:if>
 

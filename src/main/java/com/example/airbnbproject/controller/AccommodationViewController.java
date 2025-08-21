@@ -38,7 +38,7 @@ public class AccommodationViewController {
         // ✅ 로그인 사용자 정보 가져오기
         User user = (User) session.getAttribute("user");
         boolean isOwner = user != null && user.getId().equals(accommodation.getUser().getId());
-        boolean isAdmin = user != null && user.getRole().name().equals("ADMIN");
+        boolean isAdmin = user != null && user.getRole() == UserRole.ADMIN; // ← enum 직접 비교
 
         // ✅ 승인된 숙소만 접근 가능 (단, 관리자와 숙소 등록자는 예외)
         if (accommodation.getStatus() != AccommodationStatus.APPROVED && !isOwner && !isAdmin) {
@@ -60,6 +60,12 @@ public class AccommodationViewController {
         model.addAttribute("accommodation", accommodation);
         model.addAttribute("info", info);
         model.addAttribute("imagePaths", imagePaths);
+
+        if (!model.containsAttribute("reservationRequestDto")) {
+            com.example.airbnbproject.dto.ReservationRequestDto dto = new com.example.airbnbproject.dto.ReservationRequestDto();
+            dto.setAccommodationId(id);
+            model.addAttribute("reservationRequestDto", dto);
+        }
 
         return "accommodationInfo";
     }

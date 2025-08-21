@@ -13,7 +13,7 @@ h1 {
     padding: 20px;
     margin-bottom: 30px;
     border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
 }
 
 .mypage-section h2 {
@@ -44,4 +44,17 @@ th {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+}
+
+.danger-btn {
+    background: #c62828;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.danger-btn:hover {
+    background: #b71c1c;
 }

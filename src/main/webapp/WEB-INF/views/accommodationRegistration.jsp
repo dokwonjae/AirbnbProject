@@ -19,20 +19,23 @@
         <div class="alert">${msg}</div>
     </c:if>
 
-    <!-- 숙소 등록 폼 -->
+
     <form:form method="post" modelAttribute="accommodationRequestDto" action="/accommodation/register">
+        <label for="name">숙소명</label>
+        <form:input path="name" id="name"/>
+        <form:errors path="name" cssClass="error"/>
 
-        <label for="name">숙소 이름</label>
-        <input type="text" name="name" id="name" required/>
-
-        <label for="price">숙박 가격</label>
-        <input type="number" name="price" id="price" required/>
+        <label for="price">가격</label>
+        <form:input path="price" id="price" type="number"/>
+        <form:errors path="price" cssClass="error"/>
 
         <label for="view">전망 설명</label>
-        <input type="text" name="view" id="view"/>
+        <form:input path="view" id="view"/>
+        <form:errors path="view" cssClass="error"/>
 
-        <label for="image">대표 이미지 (URL)</label>
-        <input type="text" name="image" id="image"/>
+        <label for="image">이미지</label>
+        <form:input path="image" id="image"/>
+        <form:errors path="image" cssClass="error"/>
 
         <button type="submit">등록하기</button>
     </form:form>
