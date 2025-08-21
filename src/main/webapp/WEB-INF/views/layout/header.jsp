@@ -35,7 +35,7 @@
       </div>
       <ul class="dropdown-menu" id="menuDropdown">
         <% if (user != null) { %>
-        <li><a href="/myPage">마이페이지</a></li>
+        <li><a href="/account">마이페이지</a></li>
         <li><form action="/logout" method="post"><button type="submit">로그아웃</button></form></li>
         <% } else { %>
         <li><a href="/join">회원가입</a></li>
@@ -57,7 +57,7 @@
       </div>
       <ul class="dropdown-menu" id="userDropdown">
         <% if (user != null) { %>
-        <li><a href="/myPage">마이페이지</a></li>
+        <li><a href="/account">마이페이지</a></li>
         <li><form action="/logout" method="post"><button type="submit">로그아웃</button></form></li>
         <% } else { %>
         <li><a href="/join">회원가입</a></li>

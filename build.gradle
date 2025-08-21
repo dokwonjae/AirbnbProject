@@ -44,6 +44,10 @@ dependencies {
 	// 내장 톰캣 (JSP WAR 패키징 시 필요)
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
+	// 레디스
+	implementation 'org.redisson:redisson-spring-boot-starter:3.27.2' // Redisson + Spring Boot 2.7 호환
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 	// 테스트 관련
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
