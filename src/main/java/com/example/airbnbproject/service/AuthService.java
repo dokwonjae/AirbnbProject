@@ -9,18 +9,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
-@Service // 이 클래스가 서비스 레이어 컴포넌트임을 명시 (비즈니스 로직 담당)
-@RequiredArgsConstructor // final 필드를 자동으로 생성자 주입 (userRepository 주입됨)
-public class UserService {
+@Service
+@RequiredArgsConstructor
+public class AuthService {
 
-    private final UserRepository userRepository; // 데이터베이스에 접근하는 레포지토리 의존성 주입
+    private final UserRepository userRepository;
     @Transactional
     public void register(JoinRequestDto dto) {
-        // loginId 중복 검사
+
         if (userRepository.findByLoginId(dto.getLoginId()).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        }
+
+        String normalizedEmail = dto.getEmail() == null
+                ? null
+                : dto.getEmail().trim().toLowerCase(java.util.Locale.ROOT);
+
+        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         // 패스워드에 대한 salt 생성
@@ -33,7 +40,7 @@ public class UserService {
         user.setLoginId(dto.getLoginId());
         user.setPassword(encryptedPassword);
         user.setSalt(salt);
-        user.setEmail(dto.getEmail());
+        user.setEmail(normalizedEmail);       // ✅ 정규화된 값 저장
         user.setTel(dto.getTel());
         user.setRole(UserRole.USER); // enum으로 일반 사용자 권한 설정
 
@@ -42,14 +49,13 @@ public class UserService {
     }
 
     public User login(String loginId, String password) {
-        Optional<User> optionalUser = userRepository.findByLoginId(loginId);
-        if (optionalUser.isEmpty()) return null;
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
-        User user = optionalUser.get();
-
-        // 암호화된 비밀번호 비교
         String encryptedInput = SHA256.encrypt(password, user.getSalt());
-        if (!user.getPassword().equals(encryptedInput)) return null;
+        if (!user.getPassword().equals(encryptedInput)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
 
         return user;
     }
