@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @Table(indexes = {
         @Index(name = "idx_payment_reservation", columnList = "reservation_id"),
-        @Index(name = "ux_payment_tid", columnList = "tid", unique = true)
+        @Index(name = "idx_payment_tid",        columnList = "tid") // ✅ 일반 인덱스
 })
 public class Payment {
 
@@ -28,11 +28,11 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(length = 100, unique = true)
-    private String tid;  // null 허용(취소/실패 로그엔 없을 수 있음)
+    @Column(length = 100) // ✅ unique 제거 (nullable은 기본 true)
+    private String tid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
-
 }
+

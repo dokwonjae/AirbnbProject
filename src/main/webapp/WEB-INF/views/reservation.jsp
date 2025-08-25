@@ -24,18 +24,32 @@
         <p><strong>상태:</strong> <c:out value="${reservation.status}"/></p>
     </div>
 
-    <!-- ✅ RESERVED 상태에서만 결제 버튼 노출 -->
     <c:if test="${reservation.status == 'RESERVED'}">
         <form method="post" action="/payment/kakao">
             <input type="hidden" name="reservationId" value="${reservation.id}"/>
             <button type="submit" class="btn">카카오페이로 결제</button>
         </form>
+
+        <form method="post" action="/reservation/${reservation.id}/cancel">
+            <input type="hidden" name="reservationId" value="${reservation.id}"/>
+            <button type="submit" class="btn cancel">예약 취소</button>
+        </form>
     </c:if>
 
-    <!-- 이미 결제 완료면 안내 -->
+    <!-- ✅ PAID 상태: 결제 취소 + 예약 취소 버튼 -->
     <c:if test="${reservation.status == 'PAID'}">
         <div class="alert">이미 결제 완료된 예약입니다.</div>
+        <form method="post" action="/reservation/${reservation.id}/cancel">
+            <input type="hidden" name="reservationId" value="${reservation.id}"/>
+            <button type="submit" class="btn cancel">예약 & 결제 취소</button>
+        </form>
     </c:if>
+
+    <!-- ✅ CANCELED 상태 -->
+    <c:if test="${reservation.status == 'CANCELED'}">
+        <div class="alert">이미 취소된 예약입니다.</div>
+    </c:if>
+
 </div>
 
 </body>
