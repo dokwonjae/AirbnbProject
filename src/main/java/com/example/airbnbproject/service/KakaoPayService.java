@@ -9,7 +9,10 @@ import com.example.airbnbproject.dto.*;
 import com.example.airbnbproject.repository.PaymentRepository;
 import com.example.airbnbproject.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -177,6 +180,46 @@ public class KakaoPayService {
         }
     }
 
+    @Transactional
+    public void kakaoPayCancel(Reservation reservation) {
+        // 1) 직전 결제건(TID) 찾기
+        Payment paid = paymentRepository
+                .findTopByReservationAndStatusOrderByPaymentDateDesc(reservation, PaymentStatus.PAID)
+                .orElseThrow(() -> new IllegalStateException("결제 이력이 없어 환불할 수 없습니다."));
+
+        // 2) 카카오 취소 요청
+        KakaoPayCancelRequestDto reqDto = new KakaoPayCancelRequestDto(
+                kakaoPayConfig.getCid(),
+                paid.getTid(),
+                reservation.getTotalAmount(),  // 전액 환불
+                0
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "SECRET_KEY " + kakaoPayConfig.getSecretKey());
+
+        HttpEntity<KakaoPayCancelRequestDto> request = new HttpEntity<>(reqDto, headers);
+        String url = kakaoPayConfig.getHost() + "/v1/payment/cancel"; // 신버전 경로
+
+        ResponseEntity<KakaoPayCancelResponseDto> resp =
+                restTemplate.postForEntity(url, request, KakaoPayCancelResponseDto.class);
+
+        KakaoPayCancelResponseDto body = resp.getBody();
+        if (body == null || body.getTid() == null) {
+            throw new IllegalStateException("카카오페이 환불에 실패했습니다.");
+        }
+
+        // 3) 환불 로그 적재 (상태 기록)
+        Payment refund = new Payment();
+        refund.setReservation(reservation);
+        refund.setStatus(PaymentStatus.CANCELED);
+        refund.setTid(paid.getTid());
+        refund.setAmount(reservation.getTotalAmount());
+        refund.setPaymentDate(LocalDateTime.now());
+        paymentRepository.save(refund);
+    }
+
     /** 사용자가 결제 페이지에서 취소를 누른 경우 등 */
     @Transactional
     public void handlePaymentCancel(Long reservationId) {
@@ -194,7 +237,7 @@ public class KakaoPayService {
         Reservation resv = reservationRepository.findById(reservationId).get();
         Payment payment = new Payment();
         payment.setReservation(resv);
-        payment.setStatus(PaymentStatus.CANCELLED);
+        payment.setStatus(PaymentStatus.CANCELED);
         payment.setAmount(resv.getTotalAmount());
         payment.setPaymentDate(LocalDateTime.now());
         paymentRepository.save(payment);

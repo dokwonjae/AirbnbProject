@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -100,5 +101,21 @@ public class ReservationController {
             }
         }
         return list;
+    }
+
+    @PostMapping("/{id}/cancel")
+    public String cancelReservation(@PathVariable Long id,
+                                    HttpSession session,
+                                    RedirectAttributes ra) {
+        User user = (User) session.getAttribute("user");
+        try {
+            reservationService.cancelOrRefund(id, user); // ▼ 2) 서비스 구현
+            ra.addFlashAttribute("msg", "예약이 취소되었습니다.");
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("msg", e.getMessage());
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("msg", "결제 취소 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+        return "redirect:/reservation/" + id;
     }
 }

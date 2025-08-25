@@ -4,6 +4,7 @@ import com.example.airbnbproject.domain.*;
 import com.example.airbnbproject.dto.DisabledDateRangeDto;
 import com.example.airbnbproject.dto.ReservationRequestDto;
 import com.example.airbnbproject.repository.AccommodationRepository;
+import com.example.airbnbproject.repository.PaymentRepository;
 import com.example.airbnbproject.repository.ReservationRepository;
 import com.example.airbnbproject.support.RedisLockService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AccommodationRepository accommodationRepository;
     private final RedisLockService redisLockService;
+    private final PaymentRepository paymentRepository;
+    private final KakaoPayService kakaoPayService;
 
     @Transactional
     public Reservation createReservation(ReservationRequestDto dto, User user) {
@@ -110,5 +113,27 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<Reservation> findByUser(User user) {
         return reservationRepository.findByUser(user);
+    }
+
+    @Transactional
+    public void cancelOrRefund(Long reservationId, User user) {
+        Reservation r = reservationRepository.findByIdAndUser(reservationId, user)
+                .orElseThrow(() -> new IllegalArgumentException("예약 정보가 없거나 권한이 없습니다."));
+
+        switch (r.getStatus()) {
+            case RESERVED:
+                // 결제 전 취소: 단순 상태 변경
+                r.setStatus(ReservationStatus.CANCELLED);
+                break;
+
+            case PAID:
+                // 결제 후 취소: 카카오페이 환불 먼저 시도 → 성공 시 예약 취소
+                kakaoPayService.kakaoPayCancel(r);
+                r.setStatus(ReservationStatus.CANCELLED);
+                break;
+
+            default:
+                throw new IllegalStateException("해당 상태에서는 취소할 수 없습니다. (현재: " + r.getStatus() + ")");
+        }
     }
 }
