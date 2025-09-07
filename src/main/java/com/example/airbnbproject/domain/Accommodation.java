@@ -26,9 +26,6 @@ public class Accommodation {
     @Column(nullable = false)
     private int price;
 
-    @Column(nullable = false, length = 30)
-    private String view;
-
     @Column(nullable = false, length = 1000)
     private String image;
 
@@ -47,7 +44,6 @@ public class Accommodation {
         Accommodation a = new Accommodation();
         a.setName(dto.getName());
         a.setPrice(dto.getPrice());
-        a.setView(dto.getView());
         a.setImage(dto.getImage());
         a.setUser(user);
         return a;

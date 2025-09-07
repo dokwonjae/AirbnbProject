@@ -13,5 +13,5 @@ public class MyReservationRowResponseDto {
     private String accommodationName;
     private LocalDate checkIn;
     private LocalDate checkOut;
-    private ReservationStatus status; // 문자열로
+    private ReservationStatus status;
 }

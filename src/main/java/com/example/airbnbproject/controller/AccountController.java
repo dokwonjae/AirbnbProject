@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -41,6 +42,7 @@ public class AccountController {
         model.addAttribute("user", user);
         model.addAttribute("myAccommodations", myAccommodations);
         model.addAttribute("myReservations", myReservations);
+        model.addAttribute("dtf", DateTimeFormatter.ofPattern("yyyy. M. d."));
         return "myPage";
     }
 
@@ -54,7 +56,7 @@ public class AccountController {
             form.setEmail(user.getEmail());
             model.addAttribute("contactUpdateRequestDto", form);
         }
-        return "accountContact";
+        return "contactUpdate";
     }
 
     // 연락처 변경 처리 (POST)
@@ -65,7 +67,7 @@ public class AccountController {
                                 RedirectAttributes ra) {
         if (br.hasErrors()) {
             // 👉 에러 시 자기 페이지로 다시
-            return "accountContact";
+            return "contactUpdate";
         }
         User user = (User) session.getAttribute("user");
         try {
@@ -77,7 +79,7 @@ public class AccountController {
             return "redirect:/account";
         } catch (IllegalArgumentException e) {
             br.reject("contactError", e.getMessage());
-            return "accountContact";
+            return "contactUpdate";
         }
     }
 
@@ -87,7 +89,7 @@ public class AccountController {
         if (!model.containsAttribute("passwordChangeRequestDto")) {
             model.addAttribute("passwordChangeRequestDto", new UserPasswordChangeRequestDto());
         }
-        return "accountPassword";
+        return "passwordChange";
     }
 
     // 비밀번호 변경 처리 (POST)
@@ -98,7 +100,7 @@ public class AccountController {
                                  RedirectAttributes ra) {
         if (br.hasErrors()) {
             // 👉 에러 시 자기 페이지로 다시
-            return "accountPassword";
+            return "passwordChange";
         }
         User user = (User) session.getAttribute("user");
         try {
@@ -108,7 +110,7 @@ public class AccountController {
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
             br.reject("passwordError", e.getMessage());
-            return "accountPassword";
+            return "passwordChange";
         }
     }
 

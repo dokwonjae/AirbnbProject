@@ -35,7 +35,6 @@ public class AccommodationManageController {
             AccommodationRequestDto dto = new AccommodationRequestDto(
                     accommodation.getName(),
                     accommodation.getPrice(),
-                    accommodation.getView(),
                     accommodation.getImage()
             );
             model.addAttribute("accommodation", accommodation);
@@ -43,7 +42,7 @@ public class AccommodationManageController {
             return "accommodationEdit";
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("msg", e.getMessage());
-            return "redirect:/myPage";
+            return "redirect:/account?tab=listings";
         }
     }
 
@@ -67,13 +66,13 @@ public class AccommodationManageController {
         try {
             accommodationService.updateAccommodation(id, dto, user); // 권한 검증은 서비스
             ra.addFlashAttribute("msg", "수정이 완료되었습니다.");
-            return "redirect:/myPage";
+            return "redirect:/account?tab=listings";
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("msg", e.getMessage());
-            return "redirect:/myPage";
+            return "redirect:/account?tab=listings";
         } catch (Exception e) {
             ra.addFlashAttribute("msg", "수정 처리 중 오류가 발생했습니다.");
-            return "redirect:/myPage";
+            return "redirect:/account?tab=listings";
         }
     }
 
@@ -91,6 +90,6 @@ public class AccommodationManageController {
         } catch (Exception e) {
             ra.addFlashAttribute("msg", "삭제 요청 처리 중 오류가 발생했습니다.");
         }
-        return "redirect:/myPage";
+        return "redirect:/account?tab=listings";
     }
 }

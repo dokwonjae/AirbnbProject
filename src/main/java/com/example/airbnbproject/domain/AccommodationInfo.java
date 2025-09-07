@@ -21,7 +21,7 @@ public class AccommodationInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 100)
     private String title;
 
     @Column(length = 50)
@@ -35,6 +35,13 @@ public class AccommodationInfo {
 
     @Column(length = 255)
     private String amenities;
+
+    @Column(length = 255)
+    private String tags;
+
+    @Lob
+    private String description;
+
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id", nullable = false, unique = true)

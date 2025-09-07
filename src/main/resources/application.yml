@@ -15,7 +15,7 @@ spring:
       enabled: true
 
   config:
-        import: optional:application-secret.yml
+    import: optional:application-secret.yml
 
 server:
   port: 8080

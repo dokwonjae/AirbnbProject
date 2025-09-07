@@ -227,8 +227,8 @@ public class KakaoPayService {
         retryOptimistic(() -> {
             Reservation r = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new IllegalArgumentException("예약 정보가 없습니다."));
-            if (r.getStatus() != ReservationStatus.CANCELLED) {
-                r.setStatus(ReservationStatus.CANCELLED);
+            if (r.getStatus() != ReservationStatus.CANCELED) {
+                r.setStatus(ReservationStatus.CANCELED);
             }
             return null;
         });
@@ -253,8 +253,8 @@ public class KakaoPayService {
         retryOptimistic(() -> {
             Reservation r = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new IllegalArgumentException("예약 정보가 없습니다."));
-            if (r.getStatus() != ReservationStatus.CANCELLED) {
-                r.setStatus(ReservationStatus.CANCELLED);
+            if (r.getStatus() != ReservationStatus.CANCELED) {
+                r.setStatus(ReservationStatus.CANCELED);
             }
             return null;
         });

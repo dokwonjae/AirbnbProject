@@ -35,9 +35,7 @@ public class AccommodationService {
         // 필드 변경 — 트랜잭션 종료 시점에 dirty checking으로 UPDATE 반영
         ac.setName(dto.getName());
         ac.setPrice(dto.getPrice());
-        ac.setView(dto.getView());
         ac.setImage(dto.getImage());
-        // accommodationRepository.save(ac); // <- 굳이 호출 안 해도 됨(영속 상태면 dirty checking)
     }
 
     @Transactional

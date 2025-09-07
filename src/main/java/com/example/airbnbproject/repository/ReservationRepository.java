@@ -42,13 +42,28 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                       @Param("validStatuses") List<ReservationStatus> validStatuses);
 
     @Query("""
-            select new com.example.airbnbproject.dto.MyReservationRowResponseDto(
-               r.id, a.name, r.checkIn, r.checkOut, r.status
-            )
-            from Reservation r
-            join r.accommodation a
-            where r.user = :user
-            order by r.checkIn desc
-           """)
+             select new com.example.airbnbproject.dto.MyReservationRowResponseDto(
+                r.id, a.name, r.checkIn, r.checkOut, r.status
+             )
+             from Reservation r
+             join r.accommodation a
+             where r.user = :user
+             order by r.checkIn desc
+            """)
     List<MyReservationRowResponseDto> findMyReservationRows(@Param("user") User user);
+
+    @Query("""
+        select new com.example.airbnbproject.dto.MyReservationRowResponseDto(
+            r.id,
+            a.name,
+            r.checkIn,
+            r.checkOut,
+            r.status
+        )
+        from Reservation r
+        join r.accommodation a
+        where r.user.id = :userId
+        order by r.checkIn desc
+    """)
+    List<MyReservationRowResponseDto> findMyReservationRowsByUserId(@Param("userId") Long userId);
 }
