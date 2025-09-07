@@ -1,0 +1,124 @@
+.reservation-page {
+    max-width: 1060px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+/* 카드 레이아웃: 테두리 + 그림자 */
+.reservation-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 24px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+
+    /* 양쪽 칼럼을 같은 윗선에 맞추기 */
+    align-items: start;
+}
+.reservation-card:hover {
+    border-color: #e0e0e0;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.10);
+}
+
+/* 좌측: 이미지 + 숙소명 + 가격 */
+.reservation-left {
+    text-align: left;                 /* 중앙 → 왼쪽 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;           /* 내용도 왼쪽으로 */
+}
+
+.reservation-img {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 16/11;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid #ececec;
+    background: #f7f7f7;
+
+    display: block;
+    margin: 0 0 12px 0;                /* 상단 여백 제거, 아래만 12px */
+}
+
+.accommodation-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 8px 0 6px;
+}
+
+.price {
+    font-size: 18px;
+    color: #FF385C;
+    font-weight: 800;
+}
+
+/* 우측: 예약 정보 */
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.kv {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+.kv .k { color: #717171; }
+.kv .v { font-weight: 600; }
+
+.status.PAID { color: #006400; }
+.status.RESERVED { color: #333; }
+.status.CANCELED { color: #B32505; }
+
+/* 버튼 */
+.btn-group {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .03s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary { background: #FF385C; color: #fff; }
+.btn-danger  { background: #B32505; color: #fff; }
+
+/* 안내문 */
+.hint {
+    width: 100%;
+    padding: 10px 12px;
+    background: #FFF8F6;
+    border: 1px solid #FFE2DC;
+    border-radius: 10px;
+    color: #B32505;
+    font-size: 14px;
+}
+
+/* 반응형 */
+@media (max-width: 900px) {
+    .reservation-card { grid-template-columns: 1fr; }
+    .reservation-left, .reservation-right { text-align: left; align-items: flex-start; }
+    .reservation-img { max-width: 100%; }
+}

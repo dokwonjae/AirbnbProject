@@ -58,6 +58,18 @@
     box-shadow: 0 0 0 3px rgba(227, 28, 95, .15);
 }
 
+/* 파일 인풋은 높이 고정 해제 */
+.file-input {
+    height: auto;
+    padding: 10px 12px;
+}
+
+.error {
+    margin-top: 6px;
+    color: #b42323;
+    font-size: 13px;
+}
+
 .alert {
     margin-bottom: 12px;
     padding: 10px 12px;
@@ -66,12 +78,6 @@
     color: #b42323;
     border-radius: 10px;
     font-size: 14px;
-}
-
-.error {
-    margin-top: 6px;
-    color: #b42323;
-    font-size: 13px;
 }
 
 .actions {
@@ -93,7 +99,7 @@
     text-decoration: none;
     color: #222;
     cursor: pointer;
-    transition: filter .15s ease, transform .02s;
+    transition: filter .15s, transform .02s;
 }
 
 .btn:hover {

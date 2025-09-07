@@ -1,60 +1,114 @@
-body {
-    font-family: 'Arial', sans-serif;
-    margin: 40px;
-    background-color: #f9f9f9;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap');
+
+:root{
+    --page-w: 1200px;
+    --muted: #717171;
+    --border: 1px solid #eee;
+    --shadow: 0 8px 24px rgba(0,0,0,.06);
+    --radius: 14px;
+    --accent: #E31C5F;
 }
 
-h1 {
-    margin-bottom: 30px;
+body{ font-family:'Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,Arial; color:#222; }
+
+.account-page{
+    max-width: var(--page-w);
+    margin: 0 auto;
+    padding: 24px;
 }
 
-.mypage-section {
-    background-color: #fff;
-    padding: 20px;
-    margin-bottom: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+.page-title{
+    margin: 8px 0 18px;
+    font-size: 26px;
+    font-weight: 700;
 }
 
-.mypage-section h2 {
-    margin-bottom: 15px;
+.account-layout{
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    align-items: start;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+/* 사이드 내비 */
+.sidenav{
+    border: var(--border);
+    border-radius: var(--radius);
+    background:#fff;
+    padding: 10px;
+    position: sticky;
+    top: 88px;
+    box-shadow: var(--shadow);
 }
 
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-}
-
-th {
-    background-color: #f0f0f0;
-}
-
-.register-btn {
-    display: inline-block;
-    margin-bottom: 10px;
-    padding: 8px 14px;
-    background-color: #4CAF50;
-    color: white;
+.sidenav .nav-item{
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
     text-decoration: none;
-    border-radius: 5px;
+    color:#222;
+    font-weight: 600;
+}
+.sidenav .nav-item:hover{ background:#f6f6f6; }
+.sidenav .nav-item.active{ background:#f1f1f1; }
+.nav-ico{ width:22px; text-align:center; }
+
+/* 우측 패널 공통 카드 */
+.pane-card{
+    background:#fff;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
 }
 
-.danger-btn {
-    background: #c62828;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-}
+.pane-title{ margin:0 0 12px; font-size:20px; font-weight:700; }
+.pane-title-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 
-.danger-btn:hover {
-    background: #b71c1c;
+.muted{ color: var(--muted); }
+
+.info-grid{ display:grid; gap:10px; margin-top: 4px; }
+.info-row{ display:flex; gap:12px; }
+.info-row .k{ min-width: 88px; color:var(--muted); }
+.info-row .v{ font-weight:600; }
+
+/* 버튼 */
+.btn-row{ display:flex; gap:10px; margin-top:14px; }
+.btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding: 10px 14px; border-radius:10px;
+    border: 1px solid #ddd; background:#fff; cursor:pointer;
+    text-decoration:none; color:#222; font-weight:600;
+}
+.btn:hover{ border-color:#ccc; }
+.btn.primary{ background: var(--accent); border-color: var(--accent); color:#fff; }
+.btn.danger{ border-color:#f2bcbc; color:#b42323; }
+.btn.tiny{ padding:6px 10px; font-size:13px; }
+.mt-12{ margin-top:12px; }
+
+.badge{
+    display:inline-block; padding:6px 10px; border-radius:999px;
+    border: 1px solid #ddd; font-size:12px; color:#444; background:#fafafa;
+}
+.badge.warn{ border-color:#ffd5a8; background:#fff5e6; color:#8a5600; }
+
+/* 표 */
+.table-wrap{ width:100%; overflow:auto; }
+.tbl{ width:100%; border-collapse: collapse; }
+.tbl th, .tbl td{ padding: 12px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.tbl th{ text-align:left; color:#555; font-weight:700; background:#fafafa; position:sticky; top:0; }
+.tbl tr:hover td{ background:#fcfcfc; }
+.ellipsis{ max-width: 440px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.link{ color:#0a66c2; text-decoration:none; font-weight:600; }
+.link:hover{ text-decoration: underline; }
+
+/* 반응형 */
+@media (max-width: 960px){
+    .account-layout{ grid-template-columns: 1fr; }
+    .sidenav{ position: static; }
+}
+@media (max-width: 520px){
+    .tbl th, .tbl td{ padding: 10px 8px; font-size: 14px; }
+    .pane-title{ font-size:18px; }
 }
