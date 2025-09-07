@@ -3,8 +3,10 @@ package com.example.airbnbproject.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user")
@@ -36,6 +38,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role; // 권한
+
+    @CreationTimestamp
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
     @PrePersist @PreUpdate
     private void normalizeFields() {
         if (email != null) email = email.trim().toLowerCase(java.util.Locale.ROOT);

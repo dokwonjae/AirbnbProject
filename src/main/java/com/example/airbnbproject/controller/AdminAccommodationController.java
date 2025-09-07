@@ -4,38 +4,27 @@ import com.example.airbnbproject.domain.Accommodation;
 import com.example.airbnbproject.domain.AccommodationStatus;
 import com.example.airbnbproject.domain.User;
 import com.example.airbnbproject.repository.AccommodationRepository;
+import com.example.airbnbproject.repository.UserRepository;
 import com.example.airbnbproject.service.AccommodationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminAccommodationController {
 
+    private final UserRepository userRepository;
+
     private final AccommodationRepository accommodationRepository;
     private final AccommodationService accommodationService;
 
-    // 관리자 대시보드
-    @GetMapping
-    public String dashboard() {
-        return "adminDashboard";
-    }
-
-    // 숙소 전체 보기 (승인/반려/대기)
-    @GetMapping("/accommodations")
-    public String showAllForAdmin(Model model,
-                                  @ModelAttribute("msg") String msg) {
-        List<Accommodation> all = accommodationRepository.findAll();
-        model.addAttribute("accommodationData", all);
-        return "adminAccommodationList";
-    }
 
     @PostMapping("/accommodations/approve/{id}")
     public String approveAccommodation(@PathVariable Long id,
@@ -51,7 +40,7 @@ public class AdminAccommodationController {
         } catch (Exception e) {
             ra.addFlashAttribute("msg", "숙소 승인 처리 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/accommodations";
+        return "redirect:/admin?tab=accommodations";
     }
 
     @PostMapping("/accommodations/reject/{id}")
@@ -68,7 +57,7 @@ public class AdminAccommodationController {
         } catch (Exception e) {
             ra.addFlashAttribute("msg", "숙소 반려 처리 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/accommodations";
+        return "redirect:/admin?tab=accommodations";
     }
 
     @PostMapping("/accommodation/delete/approve/{id}")
@@ -84,7 +73,7 @@ public class AdminAccommodationController {
         } catch (Exception e) {
             ra.addFlashAttribute("msg", "숙소 삭제 승인 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/accommodations";
+        return "redirect:/admin?tab=accommodations";
     }
 
     @PostMapping("/accommodation/delete/cancel/{id}")
@@ -101,6 +90,6 @@ public class AdminAccommodationController {
         } catch (Exception e) {
             ra.addFlashAttribute("msg", "삭제 요청 취소 처리 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/accommodations";
+        return "redirect:/admin?tab=accommodations";
     }
 }
