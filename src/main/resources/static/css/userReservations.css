@@ -1,0 +1,186 @@
+/* src/main/webapp/css/userReservations.css */
+
+.user-resv {
+    --page-w: 1200px;
+    --muted: #717171;
+    --border: 1px solid #eee;
+    --shadow: 0 8px 24px rgba(0, 0, 0, .06);
+    --radius: 14px;
+    --accent: #E31C5F;
+    --ok: #0f9d58;
+    --warn: #fbbc05;
+    --danger: #d93025;
+}
+
+.user-resv .admin-page {
+    max-width: var(--page-w);
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.user-resv .page-title {
+    margin: 8px 0 18px;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.user-resv .pane-card {
+    background: #fff;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.user-resv .pane-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.user-resv .pane-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.user-resv .muted {
+    color: var(--muted);
+}
+
+/* 버튼 */
+.user-resv .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    color: #222;
+    font-weight: 600;
+}
+
+.user-resv .btn:hover {
+    border-color: #ccc;
+}
+
+.user-resv .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.user-resv .btn.outline {
+    background: #fff;
+    border-color: #ddd;
+    color: #222;
+}
+
+.user-resv .btn.tiny {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+/* 배지 */
+.user-resv .badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    color: #444;
+    background: #fafafa;
+}
+
+.user-resv .badge.ok {
+    border-color: #bfe7cc;
+    background: #ebf8ef;
+    color: #116c3f;
+}
+
+.user-resv .badge.warn {
+    border-color: #ffd5a8;
+    background: #fff5e6;
+    color: #8a5600;
+}
+
+.user-resv .badge.danger {
+    border-color: #f3b9b3;
+    background: #fff1f0;
+    color: #a1160f;
+}
+
+/* 표 */
+.user-resv .table-wrap {
+    width: 100%;
+    overflow: auto;
+}
+
+.user-resv .tbl {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-resv .tbl th,
+.user-resv .tbl td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.user-resv .tbl th {
+    text-align: left;
+    color: #555;
+    font-weight: 700;
+    background: #fafafa;
+    position: sticky;
+    top: 0;
+}
+
+.user-resv .tbl tr:hover td {
+    background: #fcfcfc;
+}
+
+.user-resv .ellipsis {
+    max-width: 440px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 링크 */
+.user-resv .link {
+    color: #0a66c2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.user-resv .link:hover {
+    text-decoration: underline;
+}
+
+/* 반응형 */
+@media (max-width: 960px) {
+    .user-resv .page-title {
+        font-size: 22px;
+    }
+
+    .user-resv .pane-card {
+        padding: 16px;
+    }
+
+    .user-resv .tbl th, .user-resv .tbl td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 520px) {
+    .user-resv .ellipsis {
+        max-width: 240px;
+    }
+}
