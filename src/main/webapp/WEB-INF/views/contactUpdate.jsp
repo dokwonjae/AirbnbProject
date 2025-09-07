@@ -1,40 +1,45 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
-
+<html lang="ko">
 <head>
     <title>연락처 변경</title>
-    <link rel="stylesheet" type="text/css" href="/css/header.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/contactUpdate.css"><!-- 페이지 전용 -->
 </head>
 <body>
 <%@ include file="layout/header.jsp" %>
 
-<h1>연락처 변경</h1>
+<div class="form-page">
+    <h1 class="page-title">연락처 변경</h1>
 
-<form:form method="post" modelAttribute="contactUpdateRequestDto" action="/account/contact">
-    <form:errors cssClass="error" element="div"/>
+    <div class="form-card">
+        <form:form method="post" modelAttribute="contactUpdateRequestDto" action="/account/contact" cssClass="form">
+            <form:errors cssClass="alert" element="div"/>
 
-    <div>
-        <label>전화번호</label>
-        <form:input path="tel"/>
-        <form:errors path="tel" cssClass="error"/>
+            <div class="form-row">
+                <label for="tel">전화번호</label>
+                <form:input path="tel" id="tel" cssClass="input"/>
+                <form:errors path="tel" cssClass="error"/>
+            </div>
+
+            <div class="form-row">
+                <label for="email">이메일</label>
+                <form:input path="email" id="email" cssClass="input"/>
+                <form:errors path="email" cssClass="error"/>
+            </div>
+
+            <c:if test="${not empty _csrf}">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </c:if>
+
+            <div class="actions">
+                <button type="submit" class="btn primary">저장</button>
+                <a href="/account" class="btn">취소</a>
+            </div>
+        </form:form>
     </div>
-
-    <div>
-        <label>이메일</label>
-        <form:input path="email"/>
-        <form:errors path="email" cssClass="error"/>
-    </div>
-
-    <c:if test="${not empty _csrf}">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-    </c:if>
-
-    <button type="submit">저장</button>
-    <a href="/account">취소</a>
-</form:form>
-
+</div>
 </body>
 </html>

@@ -1,0 +1,110 @@
+/* ===== Brand Tokens (scope: auth only) ===== */
+:root{
+    --accent: #FF385C;     /* Primary Core */
+    --acc-1: #E61E4D;
+    --acc-2: #E31C5F;
+    --acc-3: #D70466;
+
+    --text: #222;
+    --border: #E7E7E7;
+    --radius: 16px;
+
+    --focus-ring: rgba(255,56,92,.18); /* accent 기반 포커스 */
+}
+
+/* 스크롤 잠금 */
+.auth-no-scroll { overflow: hidden; }
+
+/* 레이어 */
+.auth-modal {
+    position: fixed; inset: 0; z-index: 1000;
+    display: grid; place-items: center;
+}
+.auth-modal[hidden] { display: none; }
+
+.auth-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(2px);
+}
+
+/* 박스 */
+.auth-dialog {
+    position: relative;
+    width: min(560px, calc(100% - 48px));
+    background: #fff; border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    padding: 28px 28px 24px;
+    animation: auth-pop .18s ease-out;
+}
+@keyframes auth-pop {
+    from { transform: translateY(8px) scale(.98); opacity: .6; }
+    to   { transform: translateY(0)   scale(1);    opacity: 1; }
+}
+
+.auth-close {
+    position: absolute; top: 12px; left: 12px;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--border); background: #fff;
+    display: grid; place-items: center; cursor: pointer;
+}
+
+/* 공통 */
+.auth-title { margin: 0 0 16px; font-size: 20px; font-weight: 700; text-align: center; }
+.auth-form  { padding: 0 8px; }
+.auth-field { margin-bottom: 14px; }
+.auth-field label { display:block; margin-bottom:6px; font-weight:700; font-size:14px; color:#444; }
+
+.auth-input {
+    width: 100%; height: 44px; padding: 0 12px;
+    border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;
+    font-size: 14px; background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.auth-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+.auth-input.is-invalid {
+    border-color:#E0A4A4; background:#FFF7F7;
+}
+
+.auth-submit {
+    width: 100%; height: 48px; margin-top: 4px;
+    border: none; border-radius: 12px; background: var(--accent);
+    color: #fff;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: transform .02s, filter .2s, box-shadow .15s ease;
+    box-shadow: 0 1px 0 rgba(0,0,0,.06);
+}
+.auth-submit:hover { filter: brightness(1.05); }
+.auth-submit:active { transform: translateY(1px); }
+.auth-submit:disabled { opacity:.6; cursor:not-allowed; }
+
+.auth-footer { margin-top: 14px; padding: 0 8px; font-size: 14px; text-align: center; color: #555; }
+.auth-link {
+    color: var(--accent);
+    text-decoration: none;
+    outline-offset: 2px;
+}
+.auth-link:hover { text-decoration: underline; }
+.auth-link:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    border-radius: 4px;
+}
+
+/* 에러 UI */
+.auth-alert {
+    margin: 0 8px 10px; padding: 10px 12px;
+    border: 1px solid #F2C6C6; background:#FFF4F4;
+    color:#8A1C1C; border-radius: 10px; font-size:14px;
+}
+
+/* 전역 오염 방지 */
+.auth-modal input, .auth-modal button { font-family: inherit; }
+
+/* ===== Optional: Gradient Button Variant (for later use) ===== */
+.auth-submit.is-gradient {
+    background: linear-gradient(90deg, var(--acc-1), var(--acc-2) 50%, var(--acc-3));
+}
