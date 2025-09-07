@@ -13,5 +13,5 @@ public class DisabledDateRangeDto {
     private LocalDate from;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate to;  // 달력 비활성화 끝(포함)
+    private LocalDate to;
 }

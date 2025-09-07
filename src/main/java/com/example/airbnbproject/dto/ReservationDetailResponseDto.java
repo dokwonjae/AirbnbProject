@@ -22,6 +22,8 @@ public class ReservationDetailResponseDto {
     private final int guestCount;
     private final int totalAmount;     // 총 금액(예약 시점 계산값)
     private final String status;       // RESERVED/PAID 등
+    private String image;
+
 
     public ReservationDetailResponseDto(Reservation res) {
         this.id = res.getId();
@@ -35,5 +37,6 @@ public class ReservationDetailResponseDto {
         this.guestCount = res.getGuestCount();
         this.totalAmount = res.getTotalAmount();
         this.status = res.getStatus().name();
+        this.image = res.getAccommodation().getImage();
     }
 }

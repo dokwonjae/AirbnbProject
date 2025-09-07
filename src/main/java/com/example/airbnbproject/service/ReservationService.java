@@ -123,13 +123,13 @@ public class ReservationService {
         switch (r.getStatus()) {
             case RESERVED:
                 // 결제 전 취소: 단순 상태 변경
-                r.setStatus(ReservationStatus.CANCELLED);
+                r.setStatus(ReservationStatus.CANCELED);
                 break;
 
             case PAID:
                 // 결제 후 취소: 카카오페이 환불 먼저 시도 → 성공 시 예약 취소
                 kakaoPayService.kakaoPayCancel(r);
-                r.setStatus(ReservationStatus.CANCELLED);
+                r.setStatus(ReservationStatus.CANCELED);
                 break;
 
             default:
