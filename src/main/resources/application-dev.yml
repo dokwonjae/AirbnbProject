@@ -28,7 +28,6 @@ spring:
 
 redisson:
   address: redis://localhost:6379
-  # password: ${REDIS_PASSWORD:}
   lock:
     lease-seconds: 5   # 락 자동 해제 시간 (임계영역이 5초 넘으면 늘리기)
     wait-seconds: 3    # 락 대기 최대 시간
