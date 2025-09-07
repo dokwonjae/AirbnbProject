@@ -7,4 +7,5 @@ public interface AccommodationInfoRepository extends JpaRepository<Accommodation
     AccommodationInfo findByAccommodationId(Long accommodationId);
     boolean existsByAccommodationId(Long accommodationId);
 
+
 }

@@ -17,8 +17,5 @@ public class AccommodationRequestDto {
     @Min(value = 1, message = "가격은 1 이상이어야 합니다.")
     private int price;
 
-    @NotBlank(message = "전망 정보를 입력해주세요.")
-    private String view;
-
     private String image;
 }

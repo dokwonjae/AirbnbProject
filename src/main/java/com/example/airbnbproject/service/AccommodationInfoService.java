@@ -7,6 +7,7 @@ import com.example.airbnbproject.dto.AccommodationInfoRequestDto;
 import com.example.airbnbproject.repository.AccommodationInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -94,11 +95,24 @@ public class AccommodationInfoService {
         accommodationInfoRepository.save(info);
     }
 
+    @Transactional
     public Long delete(Long infoId) {
-        AccommodationInfo info = findById(infoId);
-        Long acId = info.getAccommodation().getId();
+        AccommodationInfo info = accommodationInfoRepository.findById(infoId)
+                .orElseThrow(() -> new IllegalArgumentException("상세정보가 없습니다."));
+
+        // 연관 숙소 보관
+        Accommodation acc = info.getAccommodation();
+
+        // 1) 양방향 연관 끊기 (중요)
+        if (acc != null) {
+            acc.setAccommodationInfo(null);
+        }
+        info.setAccommodation(null); // 안전하게 역참조도 해제
+
+        // 3) 삭제
         accommodationInfoRepository.delete(info);
-        return acId;
+
+        return acc != null ? acc.getId() : null;
     }
 
     public AccommodationInfoRequestDto toDto(AccommodationInfo info) {

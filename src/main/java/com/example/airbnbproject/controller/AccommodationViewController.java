@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -22,11 +23,21 @@ public class AccommodationViewController {
     private final AccommodationInfoRepository accommodationInfoRepository;
 
     @GetMapping("/")
-    public String index(Model model) {
-        List<Accommodation> list = accommodationRepository.findByStatus(AccommodationStatus.APPROVED);
+    public String index(@RequestParam(value = "tag", required = false) String tag, Model model) {
+        List<Accommodation> list;
+        if (tag != null && !tag.isBlank()) {
+            list = accommodationRepository.findApprovedByTag(tag, AccommodationStatus.APPROVED);
+            model.addAttribute("selectedTag", tag);
+        } else {
+            list = accommodationRepository.findByStatus(AccommodationStatus.APPROVED);
+            model.addAttribute("selectedTag", null);
+        }
         model.addAttribute("accommodationData", list);
         return "index";
     }
+
+
+
 
     @GetMapping("/accommodation/{id}")
     public String showAccommodationDetail(@PathVariable Long id, Model model, HttpSession session) {
