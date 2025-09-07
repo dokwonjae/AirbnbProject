@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class LoginRequestDto {
+public class UserLoginRequestDto {
 
     @NotBlank(message = "아이디를 입력해주세요.")
     private String loginId;

@@ -1,20 +1,25 @@
 package com.example.airbnbproject.controller;
 
 import com.example.airbnbproject.domain.User;
-import com.example.airbnbproject.dto.JoinRequestDto;
-import com.example.airbnbproject.dto.LoginRequestDto;
+import com.example.airbnbproject.dto.UserJoinRequestDto;
+import com.example.airbnbproject.dto.UserLoginRequestDto;
 import com.example.airbnbproject.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,64 +27,156 @@ public class AuthController {
 
     private final AuthService userService;
 
+    // ===== 기존 유틸 =====
+    private String baseFromRef(String ref) {
+        if (ref == null || ref.isEmpty()) return "/";
+        String lower = ref.toLowerCase();
+        if (lower.contains("/join") || lower.contains("/login")) return "/";
+        return ref;
+    }
+
+    private String stripAuthParams(String url) {
+        if (url == null || url.isEmpty()) return "/";
+        try {
+            return UriComponentsBuilder.fromUriString(url)
+                    .replaceQueryParam("auth")
+                    .replaceQueryParam("login")
+                    .build(true).toUriString();
+        } catch (Exception e) {
+            return url;
+        }
+    }
+
+    private String withAuth(String url, String auth) {
+        String clean = stripAuthParams(url);
+        return clean.contains("?") ? clean + "&auth=" + auth : clean + "?auth=" + auth;
+    }
+
+    private Map<String, String> toFieldErrorMap(BindingResult br) {
+        return br.getFieldErrors().stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        FieldError::getDefaultMessage,
+                        (a, b) -> a
+                ));
+    }
+
+    // ===== 추가/보강 유틸 =====
+    /** 안전한 next 결정: 내부 경로(/로 시작)만 허용, 아니면 ref 기반으로 복귀 */
+    private String safeTarget(String next, String ref) {
+        if (next != null && next.startsWith("/")) return next;
+        return baseFromRef(ref);
+    }
+
+    /** auth + next 동시 부착 (auth 모달을 띄우면서 next를 폼에 남기기) */
+    private String withAuthAndNext(String url, String auth, String next) {
+        String clean = stripAuthParams(url);
+        try {
+            UriComponentsBuilder b = UriComponentsBuilder.fromUriString(clean)
+                    .replaceQueryParam("auth", auth);
+            if (next != null && !next.isBlank()) {
+                b.replaceQueryParam("next", next);
+            }
+            return b.build(true).toUriString();
+        } catch (Exception e) {
+            // 실패 시 최소한 auth만
+            return withAuth(url, auth);
+        }
+    }
+
+    // ===== GET 폼 진입 =====
+
     @GetMapping("/join")
-    public String joinForm(Model model) {
-        model.addAttribute("joinRequestDto", new JoinRequestDto());
-        return "join";
+    public String joinForm(@RequestHeader(value = "Referer", required = false) String ref,
+                           @RequestParam(value = "next", required = false) String next) {
+        String target = safeTarget(next, ref);
+        // 실제로 보여줄 페이지 URL에 모달 파라미터와 next를 유지
+        return "redirect:" + withAuthAndNext(target, "join", target);
     }
+
     @GetMapping("/login")
-    public String loginForm(Model model) {
-        model.addAttribute("loginRequestDto", new LoginRequestDto());
-        return "login";
+    public String loginForm(@RequestHeader(value = "Referer", required = false) String ref,
+                            @RequestParam(value = "next", required = false) String next) {
+        String target = safeTarget(next, ref);
+        return "redirect:" + withAuthAndNext(target, "login", target);
     }
+
+    // ===== POST 처리 =====
 
     @PostMapping("/join")
-    public String join(@Valid @ModelAttribute("joinRequestDto") JoinRequestDto dto,
-                       BindingResult bindingResult,
-                       Model model,
+    public String join(@Valid @ModelAttribute UserJoinRequestDto dto,
+                       BindingResult br,
+                       @RequestHeader(value = "Referer", required = false) String ref,
+                       @RequestParam(value = "next", required = false) String next,
                        RedirectAttributes ra) {
+        String back = safeTarget(next, ref);
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("joinRequestDto", dto);
-            return "join";
+        if (dto.getPassword() != null && dto.getConfirmPassword() != null) {
+            if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+                br.rejectValue("confirmPassword", "Mismatch", "비밀번호 확인이 일치하지 않습니다.");
+            }
         }
+
+        if (br.hasErrors()) {
+            ra.addFlashAttribute("authTab", "join");
+            ra.addFlashAttribute("joinData", dto);
+            ra.addFlashAttribute("joinFieldErrors", toFieldErrorMap(br));
+            return "redirect:" + withAuthAndNext(back, "join", back);
+        }
+
         try {
             userService.register(dto);
-            ra.addFlashAttribute("msg", "회원가입 성공");
-            return "redirect:/login";
+            ra.addFlashAttribute("toast", "회원가입 성공");
+            // 가입 후 로그인 모달로 자연스럽게 이동 (next 유지)
+            return "redirect:" + withAuthAndNext(stripAuthParams(back), "login", back);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("msg", e.getMessage());
-            model.addAttribute("joinRequestDto", dto);
-            return "join";
+            ra.addFlashAttribute("authTab", "join");
+            ra.addFlashAttribute("joinData", dto);
+            ra.addFlashAttribute("joinErrorMsg", e.getMessage());
+            return "redirect:" + withAuthAndNext(back, "join", back);
         }
     }
 
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute("loginRequestDto") LoginRequestDto loginRequestDto,
-                        BindingResult bindingResult,
-                        Model model,
+    public String login(@Valid @ModelAttribute UserLoginRequestDto dto,
+                        BindingResult br,
+                        @RequestHeader(value = "Referer", required = false) String ref,
+                        @RequestParam(value = "next", required = false) String next,
                         HttpSession session,
                         RedirectAttributes ra) {
-        if (bindingResult.hasErrors()) {
-            return "login";
+        String back = safeTarget(next, ref);
+
+        if (br.hasErrors()) {
+            ra.addFlashAttribute("authTab", "login");
+            ra.addFlashAttribute("prevLoginId", dto.getLoginId());
+            ra.addFlashAttribute("loginFieldErrors", toFieldErrorMap(br));
+            return "redirect:" + withAuthAndNext(back, "login", back);
         }
 
         try {
-            User user = userService.login(loginRequestDto.getLoginId(), loginRequestDto.getPassword());
+            User user = userService.login(dto.getLoginId(), dto.getPassword());
             session.setAttribute("user", user);
+
+            // (선택) CSRF 토큰 미리 발급 – POST 폼들에서 바로 사용 가능
+            if (session.getAttribute("csrfToken") == null) {
+                session.setAttribute("csrfToken", java.util.UUID.randomUUID().toString());
+            }
+
             ra.addFlashAttribute("msg", "로그인 성공");
-            return "redirect:/";
+            // next가 있으면 그쪽으로, 없으면 기존 back
+            return "redirect:" + stripAuthParams(back);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("loginError", e.getMessage());  // → 메시지 JSP로 전달
-            return "login";
+            ra.addFlashAttribute("authTab", "login");
+            ra.addFlashAttribute("prevLoginId", dto.getLoginId());
+            ra.addFlashAttribute("loginErrorMsg", e.getMessage());
+            return "redirect:" + withAuthAndNext(back, "login", back);
         }
     }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session,
+                         @RequestHeader(value = "Referer", required = false) String ref) {
         session.invalidate();
-        return "redirect:/";
+        return "redirect:" + stripAuthParams(baseFromRef(ref));
     }
-
-
 }

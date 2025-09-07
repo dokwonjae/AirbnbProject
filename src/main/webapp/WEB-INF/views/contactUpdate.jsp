@@ -2,9 +2,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<html>
+<!DOCTYPE html>
+
 <head>
     <title>연락처 변경</title>
+    <link rel="stylesheet" type="text/css" href="/css/header.css">
 </head>
 <body>
 <%@ include file="layout/header.jsp" %>

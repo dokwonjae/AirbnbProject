@@ -2,7 +2,7 @@ package com.example.airbnbproject.service;
 
 import com.example.airbnbproject.domain.User;
 import com.example.airbnbproject.domain.UserRole;
-import com.example.airbnbproject.dto.JoinRequestDto;
+import com.example.airbnbproject.dto.UserJoinRequestDto;
 import com.example.airbnbproject.repository.UserRepository;
 import com.example.airbnbproject.util.SHA256;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,11 @@ public class AuthService {
 
     private final UserRepository userRepository;
     @Transactional
-    public void register(JoinRequestDto dto) {
+    public void register(UserJoinRequestDto dto) {
+
+        if (dto.getPassword() == null || !dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
 
         if (userRepository.findByLoginId(dto.getLoginId()).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
@@ -40,8 +44,8 @@ public class AuthService {
         user.setLoginId(dto.getLoginId());
         user.setPassword(encryptedPassword);
         user.setSalt(salt);
-        user.setEmail(normalizedEmail);       // ✅ 정규화된 값 저장
-        user.setTel(dto.getTel());
+        user.setEmail(normalizedEmail);
+        user.setTel(dto.getTel().trim());
         user.setRole(UserRole.USER); // enum으로 일반 사용자 권한 설정
 
         // DB에 저장
