@@ -6,7 +6,7 @@
 <head>
     <title>비밀번호 변경</title>
     <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/passwordChange.css"><!-- 페이지 전용 -->
+    <link rel="stylesheet" href="/css/passwordChange.css">
 </head>
 <body>
 <%@ include file="layout/header.jsp" %>
@@ -16,7 +16,8 @@
 
     <div class="form-card">
         <form:form method="post" modelAttribute="passwordChangeRequestDto" action="/account/password" cssClass="form">
-            <!-- 폼 상단 공통 에러 -->
+
+            <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
             <form:errors cssClass="alert" element="div"/>
 
             <div class="form-row">
@@ -37,7 +38,6 @@
                 <form:errors path="newPasswordConfirm" cssClass="error"/>
             </div>
 
-            <!-- 커스텀 오브젝트 에러 -->
             <form:errors path="confirmMatches" cssClass="error"/>
             <form:errors path="differentFromCurrent" cssClass="error"/>
 

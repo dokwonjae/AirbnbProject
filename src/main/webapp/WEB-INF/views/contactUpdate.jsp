@@ -16,6 +16,7 @@
 
     <div class="form-card">
         <form:form method="post" modelAttribute="contactUpdateRequestDto" action="/account/contact" cssClass="form">
+            <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
             <form:errors cssClass="alert" element="div"/>
 
             <div class="form-row">

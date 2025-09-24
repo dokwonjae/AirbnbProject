@@ -21,6 +21,7 @@
         </p>
 
         <form:form method="post" modelAttribute="accountDeleteRequestDto" action="/account/delete" cssClass="form">
+            <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
             <form:errors cssClass="alert" element="div"/>
 
             <div class="form-row">

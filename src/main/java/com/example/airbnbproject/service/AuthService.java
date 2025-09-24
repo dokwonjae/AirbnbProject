@@ -7,8 +7,8 @@ import com.example.airbnbproject.repository.UserRepository;
 import com.example.airbnbproject.util.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
