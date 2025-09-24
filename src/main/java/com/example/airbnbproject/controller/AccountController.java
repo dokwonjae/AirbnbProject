@@ -107,7 +107,7 @@ public class AccountController {
             accountService.changePassword(user.getId(), dto);
             ra.addFlashAttribute("msg", "비밀번호가 변경되었습니다. 다시 로그인해주세요.");
             session.invalidate();
-            return "redirect:/login";
+            return "redirect:/?auth=login";
         } catch (IllegalArgumentException e) {
             br.reject("passwordError", e.getMessage());
             return "passwordChange";
