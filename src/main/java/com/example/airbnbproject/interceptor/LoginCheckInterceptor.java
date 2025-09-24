@@ -41,7 +41,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             String query = req.getQueryString();
             String next = current + (query != null ? "?" + query : "");
             String encoded = URLEncoder.encode(next, StandardCharsets.UTF_8.name());
-            res.sendRedirect("/login?next=" + encoded);
+//            res.sendRedirect("/login?next=" + encoded);
+            res.sendRedirect("/?auth=login&next=" + encoded);
             return false;
         }
 

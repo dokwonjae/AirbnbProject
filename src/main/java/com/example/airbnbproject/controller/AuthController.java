@@ -8,14 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Map;
@@ -142,6 +139,7 @@ public class AuthController {
                         BindingResult br,
                         @RequestHeader(value = "Referer", required = false) String ref,
                         @RequestParam(value = "next", required = false) String next,
+                        HttpServletRequest request,
                         HttpSession session,
                         RedirectAttributes ra) {
         String back = safeTarget(next, ref);
@@ -155,16 +153,19 @@ public class AuthController {
 
         try {
             User user = userService.login(dto.getLoginId(), dto.getPassword());
-            session.setAttribute("user", user);
 
-            // (선택) CSRF 토큰 미리 발급 – POST 폼들에서 바로 사용 가능
-            if (session.getAttribute("csrfToken") == null) {
-                session.setAttribute("csrfToken", java.util.UUID.randomUUID().toString());
+            if (session != null) {
+                try { session.invalidate(); } catch (IllegalStateException ignore) {}
             }
+            HttpSession newSession = request.getSession(true);
+
+            newSession.setAttribute("user", user);
+
+            newSession.setAttribute("csrfToken", java.util.UUID.randomUUID().toString());
 
             ra.addFlashAttribute("msg", "로그인 성공");
-            // next가 있으면 그쪽으로, 없으면 기존 back
             return "redirect:" + stripAuthParams(back);
+
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("authTab", "login");
             ra.addFlashAttribute("prevLoginId", dto.getLoginId());
