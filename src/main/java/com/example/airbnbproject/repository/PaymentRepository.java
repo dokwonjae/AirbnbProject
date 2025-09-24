@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    boolean existsByTid(String tid);
+    boolean existsByTidAndStatus(String tid, PaymentStatus status);
     Optional<Payment> findTopByReservationAndStatusOrderByPaymentDateDesc(Reservation reservation, PaymentStatus status);
 }
 

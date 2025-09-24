@@ -8,10 +8,15 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
-@Table(indexes = {
-        @Index(name = "idx_payment_reservation", columnList = "reservation_id"),
-        @Index(name = "idx_payment_tid",        columnList = "tid") // ✅ 일반 인덱스
-})
+@Table(
+        indexes = {
+                @Index(name = "idx_payment_reservation", columnList = "reservation_id"),
+                @Index(name = "idx_payment_tid",        columnList = "tid")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_payment_tid_status", columnNames = {"tid", "status"})
+        }
+)
 public class Payment {
 
     @Id
@@ -28,11 +33,10 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(length = 100) // ✅ unique 제거 (nullable은 기본 true)
+    @Column(length = 100)
     private String tid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 }
-

@@ -9,6 +9,7 @@ import com.example.airbnbproject.dto.*;
 import com.example.airbnbproject.repository.PaymentRepository;
 import com.example.airbnbproject.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException; // ⬅︎ 추가
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -157,17 +158,21 @@ public class KakaoPayService {
                 return null;
             });
 
-            // ✅ 멱등 저장: 같은 TID가 이미 저장되어 있으면 스킵
-            if (!paymentRepository.existsByTid(tid)) {
-                Reservation paid = reservationRepository.findById(reservationId).get();
+            // ✅ 멱등 저장: 같은 (tid, PAID) 가 이미 있으면 저장 스킵
+            try {
+                if (!paymentRepository.existsByTidAndStatus(tid, PaymentStatus.PAID)) {
+                    Reservation paid = reservationRepository.findById(reservationId).get();
 
-                Payment payment = new Payment();
-                payment.setReservation(paid);
-                payment.setStatus(PaymentStatus.PAID);
-                payment.setTid(tid);
-                payment.setAmount(paid.getTotalAmount());
-                payment.setPaymentDate(LocalDateTime.now());
-                paymentRepository.save(payment);
+                    Payment payment = new Payment();
+                    payment.setReservation(paid);
+                    payment.setStatus(PaymentStatus.PAID);
+                    payment.setTid(tid);
+                    payment.setAmount(paid.getTotalAmount());
+                    payment.setPaymentDate(LocalDateTime.now());
+                    paymentRepository.save(payment); // 동시성 경쟁 시 DB UNIQUE가 최종 방어
+                }
+            } catch (DataIntegrityViolationException dup) {
+                // 동시성으로 UNIQUE(tid,status) 위반 → 이미 저장된 것으로 간주하고 멱등 처리(무시)
             }
 
             return body;
@@ -210,7 +215,7 @@ public class KakaoPayService {
             throw new IllegalStateException("카카오페이 환불에 실패했습니다.");
         }
 
-        // 3) 환불 로그 적재 (상태 기록)
+        // 3) 환불 로그 적재 (상태 기록) — (tid, CANCELED) 는 (tid, PAID) 와 공존 가능(복합 UNIQUE)
         Payment refund = new Payment();
         refund.setReservation(reservation);
         refund.setStatus(PaymentStatus.CANCELED);
