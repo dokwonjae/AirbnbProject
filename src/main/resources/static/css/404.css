@@ -1,0 +1,6 @@
+.error-card{
+    border-color:#e6ecff;
+    background: linear-gradient(180deg, #ffffff, #fbfdff 60%);
+}
+.error-title{ color:#1f4fd1; }
+.error-emoji{ filter: saturate(1.2); }
