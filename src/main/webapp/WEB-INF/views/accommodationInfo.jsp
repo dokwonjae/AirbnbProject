@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -45,6 +45,7 @@
                     </form>
                     <form method="post" action="/info/delete/${info.id}"
                           onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                        <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                         <button type="submit" class="btn-outline danger">삭제</button>
                     </form>
                 </c:if>
@@ -89,7 +90,8 @@
                     <c:when test="${info != null}">
                         <ul class="kv">
                             <li><span class="v"><c:out value="${info.subTitle}"/></span></li>
-                            <li><span class="k">최대 인원</span><span class="v"><c:out value="${info.personnel}"/>명</span></li>
+                            <li><span class="k">최대 인원</span><span class="v"><c:out value="${info.personnel}"/>명</span>
+                            </li>
                         </ul>
                     </c:when>
                     <c:otherwise>
@@ -192,10 +194,11 @@
                                action="/reservation"
                                modelAttribute="reservationRequestDto"
                                cssClass="booking-form">
+                        <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
 
                         <!-- 서버로 보낼 값 -->
                         <form:hidden path="accommodationId"/>
-                        <form:hidden path="checkIn"  id="checkInHidden"/>
+                        <form:hidden path="checkIn" id="checkInHidden"/>
                         <form:hidden path="checkOut" id="checkOutHidden"/>
 
                         <!-- 날짜 -->
@@ -210,7 +213,7 @@
                                 <input id="checkOutInput" type="text" class="ctl date" placeholder="날짜 선택" readonly>
                             </div>
                         </div>
-                        <form:errors path="checkIn"  cssClass="error"/>
+                        <form:errors path="checkIn" cssClass="error"/>
                         <form:errors path="checkOut" cssClass="error"/>
 
                         <!-- 인원 -->
@@ -248,53 +251,62 @@
 
         const ACC_ID = '${accommodation.id}';
         const fp = flatpickr('#checkInInput', {
-            plugins: [ new rangePlugin({ input: '#checkOutInput' }) ],
+            plugins: [new rangePlugin({input: '#checkOutInput'})],
             minDate: 'today',
             dateFormat: 'Y-m-d',
+            disable: [], // ⬅️ 초기화(갱신 안정화)
             onChange(selectedDates, _, instance) {
                 if (selectedDates.length === 2) {
                     const fmt = d => instance.formatDate(d, 'Y-m-d');
-                    document.getElementById('checkInHidden').value  = fmt(selectedDates[0]);
+                    document.getElementById('checkInHidden').value = fmt(selectedDates[0]);
                     document.getElementById('checkOutHidden').value = fmt(selectedDates[1]);
                 } else if (selectedDates.length === 1) {
                     document.getElementById('checkOutHidden').value = '';
                 }
             },
-            onReady(_, __, instance)       { refreshDisabled(instance); },
-            onMonthChange(_, __, instance) { refreshDisabled(instance); },
-            onYearChange(_, __, instance)  { refreshDisabled(instance); }
+            onReady(_, __, instance) {
+                refreshDisabled(instance);
+            },
+            onMonthChange(_, __, instance) {
+                refreshDisabled(instance);
+            },
+            onYearChange(_, __, instance) {
+                refreshDisabled(instance);
+            }
         });
 
-        async function refreshDisabled(instance){
+        async function refreshDisabled(instance) {
             const y = instance.currentYear;
             const m = instance.currentMonth; // 0~11
             const from = new Date(y, m, 1);
-            const to   = new Date(y, m + 2, 0); // 다음 달 말일
+            const to = new Date(y, m + 2, 0); // 다음 달 말일
 
-            const toIso = d => new Date(d.getTime() - d.getTimezoneOffset()*60000)
-                .toISOString().slice(0,10);
+            const toIso = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+                .toISOString().slice(0, 10);
 
             const url = '/reservation/accommodation/' + ACC_ID
                 + '/booked?from=' + toIso(from) + '&to=' + toIso(to);
 
             try {
-                const res = await fetch(url);
-                const ranges = await res.json();  // [{from:"YYYY-MM-DD", to:"YYYY-MM-DD"}, ...]
-
-                const disabledDays = [];
-                ranges.forEach(r => {
-                    let cur = new Date(r.from + 'T00:00:00');
-                    const end = new Date(r.to   + 'T00:00:00');
-                    while (cur <= end) {
-                        const y = cur.getFullYear();
-                        const m = String(cur.getMonth()+1).padStart(2,'0');
-                        const d = String(cur.getDate()).padStart(2,'0');
-                        disabledDays.push(`${y}-${m}-${d}`);
-                        cur.setDate(cur.getDate()+1);
-                    }
+                const res = await fetch(url, {
+                    headers: {"Accept": "application/json"},
+                    credentials: "same-origin"
                 });
+                if (!res.ok) {
+                    console.warn('예약 불가 날짜 API 응답 상태:', res.status, res.statusText);
+                    return;
+                }
+                const ranges = await res.json();  // 기대: [{from:"YYYY-MM-DD", to:"YYYY-MM-DD"}, ...]
 
-                instance.set('disable', disabledDays);
+                // ✅ 안전 검증 + flatpickr 공식 범위 형식 그대로 적용
+                const isYmd = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+                const disable = (Array.isArray(ranges) ? ranges : [])
+                    .filter(r => r && isYmd(r.from) && isYmd(r.to))
+                    .map(r => ({from: r.from, to: r.to}));
+
+                instance.set('disable', []);        // 이전 값 리셋(옵션)
+                instance.set('disable', disable);   // 범위 배열 그대로
+                instance.redraw();
             } catch (e) {
                 console.warn('예약 불가 날짜 불러오기 실패', e);
             }

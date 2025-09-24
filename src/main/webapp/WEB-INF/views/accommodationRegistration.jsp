@@ -20,6 +20,8 @@
         </c:if>
 
         <form:form method="post" modelAttribute="accommodationRequestDto" action="/accommodation/register" class="form">
+            <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+
             <div class="form-row">
                 <label for="name">숙소명</label>
                 <form:input path="name" id="name" cssClass="input"/>
