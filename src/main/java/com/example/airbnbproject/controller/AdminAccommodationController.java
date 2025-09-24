@@ -21,10 +21,8 @@ import javax.servlet.http.HttpSession;
 public class AdminAccommodationController {
 
     private final UserRepository userRepository;
-
     private final AccommodationRepository accommodationRepository;
     private final AccommodationService accommodationService;
-
 
     @PostMapping("/accommodations/approve/{id}")
     public String approveAccommodation(@PathVariable Long id,
@@ -32,6 +30,11 @@ public class AdminAccommodationController {
         try {
             Accommodation accommodation = accommodationRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("숙소를 찾을 수 없습니다."));
+
+            if (accommodation.getStatus() == AccommodationStatus.ARCHIVED) {
+                throw new IllegalArgumentException("보존(ARCHIVED)된 숙소는 승인할 수 없습니다.");
+            }
+
             accommodation.setStatus(AccommodationStatus.APPROVED);
             accommodationRepository.save(accommodation);
             ra.addFlashAttribute("msg", "숙소 승인이 완료되었습니다.");
@@ -49,6 +52,11 @@ public class AdminAccommodationController {
         try {
             Accommodation accommodation = accommodationRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("숙소를 찾을 수 없습니다."));
+
+            if (accommodation.getStatus() == AccommodationStatus.ARCHIVED) {
+                throw new IllegalArgumentException("보존(ARCHIVED)된 숙소는 반려할 수 없습니다.");
+            }
+
             accommodation.setStatus(AccommodationStatus.REJECTED);
             accommodationRepository.save(accommodation);
             ra.addFlashAttribute("msg", "숙소 반려가 완료되었습니다.");
@@ -60,18 +68,21 @@ public class AdminAccommodationController {
         return "redirect:/admin?tab=accommodations";
     }
 
+    /**
+     * 삭제 승인 → 물리삭제 대신 ARCHIVED 로 전환.
+     */
     @PostMapping("/accommodation/delete/approve/{id}")
     public String approveDelete(@PathVariable Long id,
                                 HttpSession session,
                                 RedirectAttributes ra) {
         try {
-            User user = (User) session.getAttribute("user"); // 인터셉터가 관리자 보장
-            accommodationService.deleteApproved(id, user);    // 서비스에서 권한/상태 검증
-            ra.addFlashAttribute("msg", "숙소가 삭제되었습니다.");
+            User admin = (User) session.getAttribute("user"); // 인터셉터에서 관리자 보장
+            accommodationService.deleteApproved(id, admin);    // 서비스에서 권한/상태 검증 + ARCHIVED 전환
+            ra.addFlashAttribute("msg", "숙소가 보존(ARCHIVED) 상태로 전환되었습니다.");
         } catch (IllegalArgumentException e) {
             ra.addFlashAttribute("msg", e.getMessage());
         } catch (Exception e) {
-            ra.addFlashAttribute("msg", "숙소 삭제 승인 중 오류가 발생했습니다.");
+            ra.addFlashAttribute("msg", "숙소 삭제 승인(보존 전환) 중 오류가 발생했습니다.");
         }
         return "redirect:/admin?tab=accommodations";
     }
@@ -82,6 +93,11 @@ public class AdminAccommodationController {
         try {
             Accommodation ac = accommodationRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("숙소를 찾을 수 없습니다."));
+
+            if (ac.getStatus() == AccommodationStatus.ARCHIVED) {
+                throw new IllegalArgumentException("보존(ARCHIVED)된 숙소는 삭제 요청을 취소할 수 없습니다.");
+            }
+
             ac.setStatus(AccommodationStatus.APPROVED); // 삭제 취소 → 다시 승인 상태
             accommodationRepository.save(ac);
             ra.addFlashAttribute("msg", "숙소 삭제 요청이 취소되었습니다.");

@@ -50,11 +50,9 @@
                                     <td>${r.checkOut.format(dtf)}</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${r.status == 'PAID'}"><span
-                                                    class="badge ok">예약 완료</span></c:when>
-                                            <c:when test="${r.status == 'RESERVED'}"><span
-                                                    class="badge warn">결제 대기 중</span></c:when>
-                                            <c:when test="${r.status == 'CANCELLED'}"><span class="badge danger">취소됨</span></c:when>
+                                            <c:when test="${r.status.name() == 'PAID'}"><span class="badge ok">예약 완료</span></c:when>
+                                            <c:when test="${r.status.name() == 'RESERVED'}"><span class="badge warn">결제 대기 중</span></c:when>
+                                            <c:when test="${r.status.name() == 'CANCELED'}"><span class="badge danger">취소됨</span></c:when>
                                             <c:otherwise><span class="badge"><c:out
                                                     value="${r.status}"/></span></c:otherwise>
                                         </c:choose>

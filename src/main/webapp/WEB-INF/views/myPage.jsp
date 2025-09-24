@@ -101,6 +101,7 @@
             </section>
 
             <!-- 숙소 관리 -->
+            <!-- 숙소 관리 -->
             <section class="pane-card" data-panel="listings" ${tab != 'listings' ? 'hidden' : ''}>
                 <div class="pane-title-row">
                     <h2 class="pane-title">숙소 관리</h2>
@@ -115,34 +116,48 @@
                                 <tr>
                                     <th>숙소명</th>
                                     <th>가격</th>
+                                    <th>상세</th>
                                     <th>수정</th>
                                     <th>삭제</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <c:forEach var="ac" items="${myAccommodations}">
-                                    <tr>
-                                        <td class="ellipsis">${ac.name}</td>
-                                        <td>₩<fmt:formatNumber value="${ac.price}" type="number"/>원 / 1박</td>
-                                        <td><a class="link" href="/accommodation/edit?id=${ac.id}">수정</a></td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${ac.status == 'APPROVED'}">
-                                                    <form method="post" action="/accommodation/delete"
-                                                          onsubmit="return confirm('숙소 삭제 요청을 하시겠습니까?');">
-                                                        <input type="hidden" name="id" value="${ac.id}"/>
-                                                        <button type="submit" class="btn tiny">삭제 요청</button>
-                                                    </form>
-                                                </c:when>
-                                                <c:when test="${ac.status == 'DELETE_REQUESTED'}">
-                                                    <span class="badge warn">삭제 요청됨 (승인 대기)</span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="badge">삭제 불가</span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
+                                    <!-- ARCHIVED 숙소는 호스트 화면에서 숨김 -->
+                                    <c:if test="${ac.status != 'ARCHIVED'}">
+                                        <tr>
+                                            <td class="ellipsis">${ac.name}</td>
+                                            <td>₩<fmt:formatNumber value="${ac.price}" type="number"/>원 / 1박</td>
+
+                                            <!-- 숙소 상세보기: 공개 상세 페이지로 이동 -->
+                                            <td>
+                                                <a class="link" href="/accommodation/${ac.id}">열기</a>
+                                            </td>
+
+                                            <td>
+                                                <a class="link" href="/accommodation/edit?id=${ac.id}">수정</a>
+                                            </td>
+
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${ac.status == 'APPROVED'}">
+                                                        <form method="post" action="/accommodation/delete"
+                                                              onsubmit="return confirm('숙소 삭제 요청을 하시겠습니까?');">
+                                                            <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+                                                            <input type="hidden" name="id" value="${ac.id}"/>
+                                                            <button type="submit" class="btn tiny">삭제 요청</button>
+                                                        </form>
+                                                    </c:when>
+                                                    <c:when test="${ac.status == 'DELETE_REQUESTED'}">
+                                                        <span class="badge warn">삭제 요청됨 (승인 대기)</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge">삭제 불가</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:if>
                                 </c:forEach>
                                 </tbody>
                             </table>

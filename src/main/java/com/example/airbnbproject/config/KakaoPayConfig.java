@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "spring.kakaopay")
+@ConfigurationProperties(prefix = "kakaopay")
 public class KakaoPayConfig {
     private String host;
     private String secretKey;

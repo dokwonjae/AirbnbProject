@@ -26,6 +26,7 @@
         <form:form modelAttribute="accommodationInfoRequestDto"
                    method="post" enctype="multipart/form-data"
                    action="${formAction}" class="form">
+            <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
 
             <div class="form-row">
                 <label>제목</label>

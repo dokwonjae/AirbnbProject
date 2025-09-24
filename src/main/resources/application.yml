@@ -2,9 +2,6 @@ spring:
   application:
     name: AirbnbProject
 
-  profiles:
-    active: dev
-
   mvc:
     view:
       prefix: /WEB-INF/views/
@@ -15,7 +12,15 @@ spring:
       enabled: true
 
   config:
-    import: optional:application-secret.yml
+    import: optional:file:./config/application-secret.yml
 
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+  error:
+    whitelabel:
+      enabled: false
+    include-message: never
+    include-binding-errors: never

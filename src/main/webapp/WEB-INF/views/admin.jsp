@@ -105,7 +105,7 @@
             <!-- 숙소 승인/반려 관리 -->
             <section class="pane-card" data-panel="accommodations" ${tab != 'accommodations' ? 'hidden' : ''}>
                 <div class="pane-title-row">
-                    <h2 class="pane-title">숙소 승인/반려 관리</h2>
+                    <h2 class="pane-title">숙소 승인/반려/보존(삭제요청) 관리</h2>
                 </div>
 
                 <div class="table-wrap">
@@ -115,6 +115,7 @@
                             <th>숙소명</th>
                             <th>호스트</th>
                             <th>상태</th>
+                            <th class="th-actions">상세</th>
                             <th class="th-actions">승인</th>
                             <th class="th-actions">반려</th>
                             <th class="th-actions">삭제 승인</th>
@@ -127,38 +128,58 @@
                                 <td>${ac.hostLoginId}</td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${ac.status == 'APPROVED'}"><span class="badge ok">APPROVED</span></c:when>
-                                        <c:when test="${ac.status == 'PENDING'}"><span class="badge pending">PENDING</span></c:when>
-                                        <c:when test="${ac.status == 'REJECTED'}"><span class="badge danger">REJECTED</span></c:when>
-                                        <c:when test="${ac.status == 'DELETE_REQUESTED'}"><span class="badge warn">DELETE_REQUESTED</span></c:when>
+                                        <c:when test="${ac.status.name() == 'APPROVED'}"><span class="badge ok">APPROVED</span></c:when>
+                                        <c:when test="${ac.status.name() == 'PENDING'}"><span class="badge pending">PENDING</span></c:when>
+                                        <c:when test="${ac.status.name() == 'REJECTED'}"><span class="badge danger">REJECTED</span></c:when>
+                                        <c:when test="${ac.status.name() == 'DELETE_REQUESTED'}"><span class="badge warn">DELETE_REQUESTED</span></c:when>
+                                        <c:when test="${ac.status.name() == 'ARCHIVED'}"><span class="badge muted">ARCHIVED</span></c:when>
                                         <c:otherwise><span class="badge">${ac.status}</span></c:otherwise>
                                     </c:choose>
                                 </td>
+
+                                <td class="td-actions">
+                                    <a class="btn outline" href="/accommodation/${ac.id}">보기</a>
+                                </td>
+
+                                <!-- 승인 버튼: ARCHIVED이면 비활성 -->
                                 <td class="td-actions">
                                     <form method="post" action="/admin/accommodations/approve/${ac.id}">
-                                        <button type="submit" class="btn primary">승인</button>
+                                        <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+                                        <button type="submit" class="btn primary"
+                                            ${ac.status.name() == 'APPROVED' || ac.status.name() == 'ARCHIVED' ? 'disabled' : ''}>
+                                            승인
+                                        </button>
                                     </form>
                                 </td>
 
-                                <!-- 반려 -->
+                                <!-- 반려 버튼: ARCHIVED이면 비활성 -->
                                 <td class="td-actions">
-                                    <c:if test="${ac.status == 'PENDING'}">
-                                        <form method="post" action="/admin/accommodations/reject/${ac.id}">
-                                            <button type="submit" class="btn outline">반려</button>
-                                        </form>
-                                    </c:if>
+                                    <form method="post" action="/admin/accommodations/reject/${ac.id}">
+                                        <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+                                        <button type="submit" class="btn outline"
+                                            ${ac.status.name() == 'REJECTED' || ac.status.name() == 'ARCHIVED' ? 'disabled' : ''}>
+                                            반려
+                                        </button>
+                                    </form>
                                 </td>
 
-                                <!-- 삭제 승인/취소 -->
+                                <!-- 삭제 승인/취소: DELETE_REQUESTED 일 때만 노출, ARCHIVED면 아무 동작 없음 -->
                                 <td class="td-actions">
-                                    <c:if test="${ac.status == 'DELETE_REQUESTED'}">
-                                        <form method="post" action="/admin/accommodation/delete/approve/${ac.id}" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                                            <button type="submit" class="btn danger">삭제 승인</button>
-                                        </form>
-                                        <form method="post" action="/admin/accommodation/delete/cancel/${ac.id}" onsubmit="return confirm('삭제 요청을 취소하시겠습니까?');">
-                                            <button type="submit" class="btn outline">삭제 취소</button>
-                                        </form>
-                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${ac.status == 'DELETE_REQUESTED'}">
+                                            <form method="post" action="/admin/accommodation/delete/approve/${ac.id}" onsubmit="return confirm('해당 숙소를 보존(ARCHIVED) 상태로 전환하시겠습니까?');">
+                                                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+                                                <button type="submit" class="btn danger">삭제 승인(보존 전환)</button>
+                                            </form>
+                                            <form method="post" action="/admin/accommodation/delete/cancel/${ac.id}" onsubmit="return confirm('삭제 요청을 취소하시겠습니까?');">
+                                                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
+                                                <button type="submit" class="btn outline">삭제 취소</button>
+                                            </form>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="muted">-</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -166,6 +187,7 @@
                     </table>
                 </div>
             </section>
+
         </main>
     </div>
 </div>

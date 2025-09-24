@@ -7,10 +7,14 @@ import com.example.airbnbproject.dto.KakaoPayRequestDto;
 import com.example.airbnbproject.service.KakaoPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,14 +24,24 @@ public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
 
     @PostMapping("/kakao")
-    public String kakaoPay(@ModelAttribute KakaoPayRequestDto dto,
-                           HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public String kakaoPay(@Valid @ModelAttribute KakaoPayRequestDto dto,
+                           BindingResult binding,
+                           HttpSession session,
+                           HttpServletRequest request,
+                           RedirectAttributes ra) {
 
+        if (binding.hasErrors()) {
+            // 필드별 메시지를 플래시에 싣고 이전 화면으로
+            ra.addFlashAttribute("fieldErrors", binding.getFieldErrors());
+            ra.addFlashAttribute("errorMsg", "결제 요청 값이 유효하지 않습니다.");
+            String back = Optional.ofNullable(request.getHeader("Referer")).orElse("/");
+            return "redirect:" + back;
+        }
+
+        User user = (User) session.getAttribute("user");
         String redirectUrl = kakaoPayService.kakaoPayReady(dto, user.getId().toString(), session);
         return "redirect:" + redirectUrl;
     }
-
 
 
     @GetMapping("/success")

@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                u.id, u.loginId, u.email, u.createdAt
            )
            from User u
-           order by u.createdAt desc
+           order by u.createdAt asc
            """)
     List<AdminUserRowDto> findAdminUserRows();
 }

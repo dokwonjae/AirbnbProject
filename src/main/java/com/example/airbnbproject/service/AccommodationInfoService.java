@@ -20,6 +20,7 @@ public class AccommodationInfoService {
 
     private final AccommodationInfoRepository accommodationInfoRepository;
 
+    @Transactional
     public void saveAccommodationInfo(AccommodationInfoRequestDto dto, Accommodation accommodation) throws IOException {
         if (accommodation == null) {
             throw new IllegalArgumentException("연결할 숙소 정보가 없습니다.");
@@ -56,13 +57,9 @@ public class AccommodationInfoService {
             }
         }
 
-        info.setImages(imageList); // 리스트 설정
+        info.setImages(imageList);
 
         accommodationInfoRepository.save(info); // cascade = ALL로 이미지도 같이 저장됨
-    }
-
-    public boolean existsByAccommodationId(Long accommodationId) {
-        return accommodationInfoRepository.existsByAccommodationId(accommodationId);
     }
 
     public AccommodationInfo findById(Long id) {
@@ -70,6 +67,7 @@ public class AccommodationInfoService {
                 .orElseThrow(() -> new IllegalArgumentException("상세정보 없음"));
     }
 
+    @Transactional
     public void update(Long infoId, AccommodationInfoRequestDto dto) throws IOException {
         AccommodationInfo info = findById(infoId);
         info.setTitle(dto.getTitle());
