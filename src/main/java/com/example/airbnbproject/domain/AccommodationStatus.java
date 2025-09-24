@@ -4,5 +4,6 @@ public enum AccommodationStatus {
     PENDING,
     APPROVED,
     REJECTED,
-    DELETE_REQUESTED
+    DELETE_REQUESTED,
+    ARCHIVED
 }
