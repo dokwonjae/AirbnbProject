@@ -1,0 +1,117 @@
+/* ===== index.css (메인 목록 페이지) ===== */
+
+:root {
+    /* 카드/레이아웃 변수 */
+    --gap: 24px;                /* 카드 간격 */
+    --card-min: 240px;          /* 카드의 최소 너비(모바일 기준) */
+    --hpad: 40px;               /* 컨테이너 좌우 패딩 */
+    --muted: #717171;
+}
+
+/* 메인 컨테이너(필요시) */
+.main-container {
+    max-width: 1800px;          /* 헤더 정렬용 안전치 */
+    margin: 0 auto;
+}
+
+/* ---------- 카테고리 바 ---------- */
+.category-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.category-item {
+    text-align: center;
+    color: #717171;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color .25s ease;
+    text-decoration: none;
+}
+
+.category-item img {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 8px;
+    opacity: .6;
+    transition: opacity .25s ease;
+}
+
+.category-item:hover,
+.category-item.active {
+    color: #222;
+    font-weight: 700;
+}
+
+.category-item:hover img,
+.category-item.active img {
+    opacity: 1;
+}
+
+/* ---------- 숙소 카드 그리드 ---------- */
+/* 데스크톱에서도 최대 5열.
+   화면이 넓으면 카드가 넓어지고, 좁아지면 4→3→2→1열로 자동 줄어듦 */
+.accommodation-grid {
+    display: grid;
+
+    /* 남는 공간을 카드가 늘려서 빈칸 없이 꽉 채우기 */
+    grid-template-columns: repeat(auto-fit, minmax(var(--card-min), 1fr));
+    gap: var(--gap);
+    padding: 24px var(--hpad);
+
+    /* 5열 cap: (카드최소폭 * 5) + (간격 * 4) + (좌우 패딩 * 2) */
+    max-width: calc(var(--card-min) * 5 + var(--gap) * 4 + var(--hpad) * 2);
+
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* 카드(너비 고정 금지! 1fr로 유동) */
+.accommodation-card {
+    display: block;
+}
+
+.accommodation-card a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.accommodation-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;        /* 정사각형 썸네일 */
+    object-fit: cover;
+    border-radius: 16px;
+    display: block;
+}
+
+.accommodation-card .name {
+    margin-top: 10px;
+    font-weight: 700;
+}
+
+.accommodation-card .meta {
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.accommodation-card .price {
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.accommodation-card .price span {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+/* ---------- 반응형(선택) ---------- */
+@media (max-width: 480px) {
+    :root { --card-min: 200px; } /* 아주 작은 화면에선 최소 폭 더 줄임 */
+}

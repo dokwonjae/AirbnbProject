@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/airbnb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://airbnb-db.cz0mucm4utco.ap-northeast-2.rds.amazonaws.com:3306/airbnb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useUnicode=true
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
@@ -13,3 +13,21 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  redis:
+    host: localhost
+    port: 6379
+
+kakaopay:
+  host: https://open-api.kakaopay.com/online
+  secret-key: ${KAKAO_SECRET_KEY}
+  cid: TC0ONETIME
+  approval-url: http://localhost:8080/payment/success
+  cancel-url:   http://localhost:8080/payment/cancel
+  fail-url:     http://localhost:8080/payment/fail
+
+redisson:
+  address: redis://localhost:6379
+  lock:
+    lease-seconds: 5
+    wait-seconds: 3

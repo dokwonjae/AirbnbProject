@@ -1,0 +1,24 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"-->
+<!--         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee-->
+<!--                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"-->
+<!--         version="3.1">-->
+
+<!--    <jsp-config>-->
+<!--        <jsp-property-group>-->
+<!--            <url-pattern>*.jsp</url-pattern>-->
+<!--            <page-encoding>UTF-8</page-encoding>-->
+
+<!--            &lt;!&ndash; 순서상 여기 먼저 &ndash;&gt;-->
+<!--            <trim-directive-whitespaces>true</trim-directive-whitespaces>-->
+
+<!--            &lt;!&ndash; 그 다음에 default-content-type &ndash;&gt;-->
+<!--            <default-content-type>text/html; charset=UTF-8</default-content-type>-->
+
+<!--            &lt;!&ndash; (선택) 필요하면 buffer, error-on-undeclared-namespace 순서대로 &ndash;&gt;-->
+<!--            &lt;!&ndash; <buffer>8kb</buffer> &ndash;&gt;-->
+<!--            &lt;!&ndash; <error-on-undeclared-namespace>false</error-on-undeclared-namespace> &ndash;&gt;-->
+<!--        </jsp-property-group>-->
+<!--    </jsp-config>-->
+<!--</web-app>-->

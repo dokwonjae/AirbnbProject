@@ -2,9 +2,6 @@ spring:
   application:
     name: AirbnbProject
 
-  profiles:
-    active: dev
-
   mvc:
     view:
       prefix: /WEB-INF/views/
@@ -14,8 +11,48 @@ spring:
     restart:
       enabled: true
 
+  # 로컬(dev)에서만 쓰는 시크릿 파일. 없으면 무시됨(운영 prod에서는 영향 없음)
   config:
-        import: optional:application-secret.yml
+    import: optional:file:./config/application-secret.yml
+
+  # ===== 공통 Redis (ENV 우선, 없으면 기본값) =====
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
 
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+  # Nginx 뒤에서 X-Forwarded-* 헤더 인지 (https 스킴/호스트 깨짐 방지)
+  forward-headers-strategy: framework
+
+error:
+  whitelabel:
+    enabled: false
+
+# ===== Actuator (헬스체크만 노출) =====
+management:
+  endpoint:
+    health:
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+# ===== 공통 KakaoPay/Redisson (ENV 우선, 없으면 기본값) =====
+kakaopay:
+  host: ${KAKAOPAY_HOST:https://open-api.kakaopay.com/online}
+  secret-key: ${KAKAO_SECRET_KEY:}
+  cid: ${KAKAOPAY_CID:TC0ONETIME}
+  approval-url: ${KAKAOPAY_APPROVAL_URL:http://localhost:8080/payment/success}
+  cancel-url:   ${KAKAOPAY_CANCEL_URL:http://localhost:8080/payment/cancel}
+  fail-url:     ${KAKAOPAY_FAIL_URL:http://localhost:8080/payment/fail}
+
+redisson:
+  address: ${REDISSON_ADDRESS:redis://localhost:6379}
+  lock:
+    lease-seconds: 5
+    wait-seconds: 3

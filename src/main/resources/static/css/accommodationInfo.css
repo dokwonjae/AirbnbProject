@@ -1,0 +1,418 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap');
+
+:root {
+    --page-w: 1120px;
+    --gap: 16px;
+    --radius: 16px;
+    --shadow: 0 8px 24px rgba(0, 0, 0, .08);
+    --border: 1px solid #eee;
+    --muted: #717171;
+    --accent: #E31C5F; /* 에어비앤비 핑크 */
+}
+
+body {
+    font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #222;
+    background: #fff;
+    margin: 0;
+}
+
+.page {
+    max-width: var(--page-w);
+    padding: 24px;
+    margin: 0 auto 80px;
+}
+
+/* 타이틀 영역 */
+.title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap);
+    margin-top: 8px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.sub {
+    color: var(--muted);
+    margin-top: 6px;
+    font-size: 15px;
+}
+
+.owner-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-outline {
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-outline:hover {
+    border-color: #ccc;
+}
+
+.btn-outline.danger {
+    color: #c02626;
+    border-color: #f2bcbc;
+}
+
+/* 히어로 */
+.hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.4fr;
+    gap: 12px;
+    margin-top: 16px;
+    position: relative;
+}
+
+.hero-left img {
+    width: 100%;
+    height: 520px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    display: block;
+}
+
+.hero-right {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 255px;
+}
+
+.hero-right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius);
+    display: block;
+}
+
+.hero-placeholder {
+    background: #f4f4f4;
+    border-radius: var(--radius);
+}
+
+.hero-more {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #222;
+    box-shadow: var(--shadow);
+    font-weight: 600;
+}
+
+/* 본문 2단 */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-top: 28px;
+}
+
+.left-col {
+    min-width: 0;
+}
+
+/* 섹션 */
+.section {
+    padding: 24px 0;
+    border-bottom: var(--border);
+}
+
+.h3 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Key-Value */
+.kv {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.kv .k {
+    display: inline-block;
+    min-width: 84px;
+    color: var(--muted);
+}
+
+.kv .v {
+    font-weight: 600;
+}
+
+/* 편의시설 */
+.amenity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px 16px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.amenity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 28px;
+}
+
+.amenity-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.amenity-label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* 호스트 블록 */
+.host-block {
+    padding: 16px 0;
+}
+
+.host-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.host-name {
+    font-weight: 700;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* 상세 설명 */
+.desc {
+    position: relative;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.desc.collapsed {
+    max-height: 160px;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: -webkit-gradient(
+            linear, left top, left bottom,
+            from(rgba(0, 0, 0, 1)),
+            color-stop(70%, rgba(0, 0, 0, 1)),
+            to(rgba(0, 0, 0, 0))
+    );
+}
+
+.btn-more {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-more:hover {
+    border-color: #ccc;
+}
+
+/* 예약 카드 */
+.right-col {
+    position: relative;
+}
+
+.booking-card {
+    position: sticky;
+    top: 96px;
+    background: #fff;
+    border: var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    display: block;
+}
+
+.booking-price {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.booking-price span {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-left: 4px;
+}
+
+.booking-form {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.lbl {
+    font-size: 13px;
+    color: #444;
+}
+
+.ctl {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.booking-submit {
+    margin-top: 6px;
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.booking-note {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.error {
+    color: #c02626;
+    font-size: 12px;
+}
+
+/* 추가 사진 그리드 */
+.photo-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.photo-grid img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+}
+
+/* 빈 상태 - 상세정보 등록 */
+.empty-info {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.btn-primary {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* 빈 상태용 버튼만 살짝 소형화 */
+.empty-info .btn-primary {
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* 날짜 범위 UI */
+.date-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.date-cell {
+    padding: 10px 12px;
+    border-right: 1px solid #ddd;
+    background: #fff;
+}
+
+.date-cell:last-child {
+    border-right: 0;
+}
+
+.date-label {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.date-grid .ctl.date {
+    border: 0;
+    padding: 6px 0 2px;
+    height: auto;
+}
+
+.ctl.select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #999 50%),
+    linear-gradient(135deg, #999 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+    background-position: calc(100% - 16px) 50%, calc(100% - 10px) 50%, 100% 0;
+    background-size: 6px 6px, 6px 6px, 2.5em 2.5em;
+    background-repeat: no-repeat;
+}
+
+/* 반응형 */
+@media (max-width: 980px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-left img {
+        height: 360px;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .booking-card {
+        position: static;
+    }
+}
