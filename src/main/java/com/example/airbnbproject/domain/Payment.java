@@ -33,7 +33,7 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String tid;
 
     @ManyToOne(fetch = FetchType.LAZY)

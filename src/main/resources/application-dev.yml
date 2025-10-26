@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/airbnb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://airbnb-db.cz0mucm4utco.ap-northeast-2.rds.amazonaws.com:3306/airbnb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useUnicode=true
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
