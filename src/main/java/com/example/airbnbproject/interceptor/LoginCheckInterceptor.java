@@ -15,79 +15,84 @@ import java.util.UUID;
 @Component
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
-    // CSRF 체크 면제 메서드 (Safe Methods)
     private static final Set<String> CSRF_SAFE_METHODS = Set.of("GET", "HEAD", "OPTIONS", "TRACE");
 
     @Override
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 
-        final String uri = req.getRequestURI();
+        final String ctx    = req.getContextPath(); // 예: "/_dev"
+        final String uri    = req.getRequestURI();  // 예: "/_dev/accommodation/1"
+        final String path   = uri.substring(ctx.length()); // 예: "/accommodation/1"  ← ★ 비교는 이걸로
         final String method = req.getMethod();
 
         HttpSession session = req.getSession(false);
         User loginUser = (session != null) ? (User) session.getAttribute("user") : null;
 
-        // ✅ 0) 에러 경로는 절대 막지 않음 (무한루프 방지의 1차 안전장치)
-        if (uri.startsWith("/error")) {
+        // 0) 에러 경로는 통과
+        if (path.startsWith("/error")) {
             ensureCsrfToken(session, req);
             return true;
         }
 
-        // ✅ 1) 이미 auth 파라미터가 붙은 요청은 다시 감싸지 않음 (2차 안전장치)
-        //    - /?auth=login&next=... 로 한번 왔으면 그대로 통과시켜 모달/로그인 UI가 렌더되도록
+        // 1) auth 파라미터가 있으면 통과 (모달/로그인 렌더)
         if (req.getParameter("auth") != null) {
             ensureCsrfToken(session, req);
             return true;
         }
 
-        // ✅ 2) 상세보기(GET /accommodation/{숫자})는 로그인 없이 허용 (네 기존 의도 유지)
-        if ("GET".equals(method) && uri.matches("^/accommodation/\\d+$")) {
+        // 1.5) 정적/헬스는 통과(필요시)
+        if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/")
+                || path.startsWith("/actuator")) {
             ensureCsrfToken(session, req);
             return true;
         }
 
-        // ✅ 3) 로그인 검사 (그 외 경로는 보호)
-        if (loginUser == null) {
-            String current = req.getRequestURI();
-            String query = req.getQueryString();
-            String next = current + (query != null ? "?" + query : "");
+        // 2) 숙소 상세는 비로그인 허용
+        if ("GET".equals(method) && path.matches("^/accommodation/\\d+$")) {
+            ensureCsrfToken(session, req);
+            return true;
+        }
 
-            // 🔒 루프 방지: next가 /error거나, 이미 auth=login이 들어 있으면 홈으로 교체
-            if (next.startsWith("/error") || (query != null && query.contains("auth=login"))) {
-                next = "/";
+        // 3) 로그인 검사
+        if (loginUser == null) {
+            String query = req.getQueryString();
+            // next는 "컨텍스트 포함한 원래 요청"을 그대로 보관
+            String next = uri + (query != null ? "?" + query : "");
+
+            // 루프 방지
+            if (path.startsWith("/error") || (query != null && query.contains("auth=login"))) {
+                next = ctx + "/"; // 컨텍스트 포함 홈으로
             }
 
             String encoded = URLEncoder.encode(next, StandardCharsets.UTF_8.name());
-            res.sendRedirect("/?auth=login&next=" + encoded);
+            // ★ 리다이렉트 대상에도 컨텍스트 붙이기
+            res.sendRedirect(ctx + "/?auth=login&next=" + encoded);
             return false;
         }
 
-        // ✅ 4) 관리자 경로는 ADMIN만
-        if (uri.startsWith("/admin")) {
+        // 4) 관리자 보호
+        if (path.startsWith("/admin")) {
             if (loginUser.getRole() != UserRole.ADMIN) {
-                res.sendError(HttpServletResponse.SC_FORBIDDEN); // 403
+                res.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return false;
             }
         }
 
-        // ✅ 5) CSRF 검증: 변경 메서드(POST/PUT/DELETE/…)
+        // 5) CSRF
         if (!CSRF_SAFE_METHODS.contains(method)) {
             session = (session != null) ? session : req.getSession(false);
             String sessionToken = (session != null) ? (String) session.getAttribute("csrfToken") : null;
-            String reqToken = req.getParameter("_csrf"); // 폼 hidden 필드명
+            String reqToken = req.getParameter("_csrf");
             if (sessionToken == null || !sessionToken.equals(reqToken)) {
-                res.sendError(HttpServletResponse.SC_FORBIDDEN); // 403
+                res.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return false;
             }
         }
 
-        // 통과
         ensureCsrfToken(session, req);
         return true;
     }
 
-    // 세션이 없으면 하나 만들고, CSRF 토큰이 없으면 발급
     private void ensureCsrfToken(HttpSession session, HttpServletRequest req) {
         HttpSession s = (session != null) ? session : req.getSession(true);
         if (s.getAttribute("csrfToken") == null) {
