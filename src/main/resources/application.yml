@@ -11,11 +11,9 @@ spring:
     restart:
       enabled: true
 
-  # 로컬(dev)에서만 쓰는 시크릿 파일. 없으면 무시됨(운영 prod에서는 영향 없음)
   config:
     import: optional:file:./config/application-secret.yml
 
-  # ===== 공통 Redis (ENV 우선, 없으면 기본값) =====
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}
@@ -32,7 +30,6 @@ error:
   whitelabel:
     enabled: false
 
-# ===== Actuator (헬스체크만 노출) =====
 management:
   endpoint:
     health:
@@ -42,7 +39,6 @@ management:
       exposure:
         include: health
 
-# ===== 공통 KakaoPay/Redisson (ENV 우선, 없으면 기본값) =====
 kakaopay:
   host: ${KAKAOPAY_HOST:https://open-api.kakaopay.com/online}
   secret-key: ${KAKAO_SECRET_KEY:}
