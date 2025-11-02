@@ -21,6 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                 // 2) 공개 예외 (로그인 불필요)
                 .excludePathPatterns(
                         "/", "/login", "/join",
+                        "/error", "/error/**",
                         "/payment/success", "/payment/cancel", "/payment/fail",
                         "/reservation/accommodation/*/booked",
                         "/css/**", "/js/**", "/images/**", "/favicon.ico"

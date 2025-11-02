@@ -1,27 +1,22 @@
-name: ci-cd
+name: Deploy DEV to Staging (8081)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
   workflow_dispatch: {}
 
 permissions:
   contents: read
   packages: write
 
-concurrency:
-  group: airbnb-ci-cd
-  cancel-in-progress: true
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: dokwonjae/airbnbproject
-  TAG_LATEST: prod-latest
+  TAG_DEV: dev-latest
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-dev:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,16 +34,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build & Push image
+      - name: Build & Push DEV image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_DEV }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Deploy via SSH (run deploy.sh on EC2)
+      - name: Deploy DEV via SSH (run deploy-dev.sh on EC2)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -56,7 +51,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
-            set -e
             cd /srv/airbnb
-            # 최신 태그를 환경변수로 넘겨 deploy.sh 실행
-            sudo APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_LATEST }} ./deploy-prod.sh
+            sudo APP_IMAGE_DEV=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_DEV }} ./deploy-dev.sh
