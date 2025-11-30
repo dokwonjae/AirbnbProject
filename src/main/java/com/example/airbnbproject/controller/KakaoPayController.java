@@ -3,6 +3,7 @@ package com.example.airbnbproject.controller;
 import com.example.airbnbproject.domain.User;
 import com.example.airbnbproject.dto.KakaoPayApproveFormDto;
 import com.example.airbnbproject.dto.KakaoPayApproveResponseDto;
+import com.example.airbnbproject.dto.KakaoPayReadyResponseDto;
 import com.example.airbnbproject.dto.KakaoPayRequestDto;
 import com.example.airbnbproject.service.KakaoPayService;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,22 @@ public class KakaoPayController {
         }
 
         User user = (User) session.getAttribute("user");
-        String redirectUrl = kakaoPayService.kakaoPayReady(dto, user.getId().toString(), session);
+
+        // 1) 서비스에서 Ready 요청 → 전체 DTO 받기
+        KakaoPayReadyResponseDto ready =
+                kakaoPayService.kakaoPayReady(dto, user.getId().toString(), session);
+
+        // 2) UA 기반 간단 모바일 판별
+        String ua = Optional.ofNullable(request.getHeader("User-Agent")).orElse("");
+        boolean isMobile = ua.contains("Mobi") || ua.contains("Android") || ua.contains("iPhone");
+
+        // 3) 모바일이면 app→mobile→pc 우선순위로 선택, PC는 pc 고정
+        String redirectUrl = isMobile
+                ? Optional.ofNullable(ready.getNextRedirectAppUrl())
+                .or(() -> Optional.ofNullable(ready.getNextRedirectMobileUrl()))
+                .orElse(ready.getNextRedirectPcUrl())
+                : ready.getNextRedirectPcUrl();
+
         return "redirect:" + redirectUrl;
     }
 

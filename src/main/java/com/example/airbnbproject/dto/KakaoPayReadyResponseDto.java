@@ -12,4 +12,10 @@ public class KakaoPayReadyResponseDto {
 
     @JsonProperty("next_redirect_pc_url")
     private String nextRedirectPcUrl;
+
+    @JsonProperty("next_redirect_mobile_url")
+    private String nextRedirectMobileUrl;
+
+    @JsonProperty("next_redirect_app_url")
+    private String nextRedirectAppUrl;
 }

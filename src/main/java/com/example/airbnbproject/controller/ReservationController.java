@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -43,11 +42,11 @@ public class ReservationController {
             Reservation reservation = reservationService.createReservation(dto, user);
             return "redirect:/reservation/" + reservation.getId(); // 성공은 PRG
         } catch (IllegalArgumentException e) {
-            // (B) 유효성 실패(인원 초과/날짜 오류 등) → 글로벌 에러로 표시
+            // 유효성 실패(인원 초과/날짜 오류 등) → 글로벌 에러로 표시
             br.reject("reserveError", e.getMessage());
             return forwardToAccommodationView(dto, model);
         } catch (IllegalStateException e) {
-            // (C) 기간 겹침 등 상태 오류 → 글로벌 에러로 표시
+            // 기간 겹침 등 상태 오류 → 글로벌 에러로 표시
             br.reject("overlapError", e.getMessage());
             return forwardToAccommodationView(dto, model);
         }
@@ -93,15 +92,13 @@ public class ReservationController {
 
         List<String> list = new ArrayList<>();
         for (AccommodationInfoImage img : info.getImages()) {
-            if (img.getImageData() != null && img.getImageData().length > 0) {
-                String base64 = Base64.getEncoder().encodeToString(img.getImageData());
-                list.add("data:image/jpeg;base64," + base64);
-            } else if (img.getImageUrl() != null && !img.getImageUrl().isEmpty()) {
+            if (img.getImageUrl() != null && !img.getImageUrl().isEmpty()) {
                 list.add(img.getImageUrl());
             }
         }
         return list;
     }
+
 
     @PostMapping("/{id}/cancel")
     public String cancelReservation(@PathVariable Long id,
