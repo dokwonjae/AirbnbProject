@@ -19,6 +19,8 @@ import java.util.List;
 public class AccommodationInfoService {
 
     private final AccommodationInfoRepository accommodationInfoRepository;
+    private final S3ImageStorageService s3ImageStorageService;
+
 
     @Transactional
     public void saveAccommodationInfo(AccommodationInfoRequestDto dto, Accommodation accommodation) throws IOException {
@@ -42,25 +44,35 @@ public class AccommodationInfoService {
         info.setAmenities(dto.getAmenities());
         info.setAccommodation(accommodation);
 
-        // 이미지 변환 및 추가
         List<AccommodationInfoImage> imageList = new ArrayList<>();
         int priority = 1;
 
         for (MultipartFile imageFile : dto.getImages()) {
-            if (!imageFile.isEmpty()) {
-                AccommodationInfoImage image = new AccommodationInfoImage();
-                image.setImageData(imageFile.getBytes());
-                image.setImageUrl(null);
-                image.setPriority(priority++);
-                image.setAccommodationInfo(info); // 양방향 연결
-                imageList.add(image);
+            if (imageFile == null || imageFile.isEmpty()) {
+                continue; // 빈 파일이면 스킵
             }
+
+            // (1) S3에 실제 파일 업로드
+            // 업로드 후, 이 이미지에 접근할 수 있는 URL을 리턴받음
+            String imageUrl = s3ImageStorageService
+                    .uploadAccommodationImage(accommodation.getId(), imageFile);
+
+            // (2) DB에는 URL + 메타데이터만 저장
+            AccommodationInfoImage image = new AccommodationInfoImage();
+            image.setImageUrl(imageUrl);
+            image.setPriority(priority++);
+            image.setAccommodationInfo(info);
+
+            imageList.add(image);
         }
 
+        // 5. AccommodationInfo에 이미지 리스트 세팅
         info.setImages(imageList);
 
-        accommodationInfoRepository.save(info); // cascade = ALL로 이미지도 같이 저장됨
+        // 6. 저장 (CascadeType.ALL 덕분에 images도 같이 저장됨)
+        accommodationInfoRepository.save(info);
     }
+
 
     public AccommodationInfo findById(Long id) {
         return accommodationInfoRepository.findById(id)
@@ -83,7 +95,7 @@ public class AccommodationInfoService {
         for (MultipartFile imageFile : dto.getImages()) {
             if (!imageFile.isEmpty()) {
                 AccommodationInfoImage image = new AccommodationInfoImage();
-                image.setImageData(imageFile.getBytes());
+//                image.setImageData(imageFile.getBytes());
                 image.setPriority(priority++);
                 image.setAccommodationInfo(info);
                 imageList.add(image);

@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${redisson.address}")      // 예: redis://localhost:6379
+    @Value("${redisson.address}")
     private String address;
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
-                .setAddress(address);    // 비번 X
+                .setAddress(address);
         return Redisson.create(config);
     }
 }
