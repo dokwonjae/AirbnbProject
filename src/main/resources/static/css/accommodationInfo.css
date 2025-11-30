@@ -56,6 +56,7 @@ body {
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
+    color: #222; /* [수정됨] 글자색 추가하여 버튼 텍스트 보이게 함 */
 }
 
 .btn-outline:hover {
@@ -397,34 +398,52 @@ body {
     background-repeat: no-repeat;
 }
 
-/* 반응형 */
+/* 반응형 (모바일 최적화 수정됨) */
 @media (max-width: 980px) {
+    /* 전체 레이아웃을 위아래(Flex column)로 변경하여 겹침 방지 */
     .hero-grid {
-        grid-template-columns: 1fr;   /* 이미 있음: 유지 */
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
 
-    /* 오른쪽 썸네일 2열 → 1열, 고정행높이 해제(겹침 방지) */
-    .hero-right {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;         /* ✅ 겹침/잘림 방지 */
-    }
-    /* 비율 고정해서 깔끔하게 */
-    .hero-right img {
-        height: auto;
-        aspect-ratio: 4 / 3;          /* 필요시 1/1, 3/2로 바꿔도 OK */
-    }
-
-    /* 왼쪽 대표 이미지는 조금 낮춰서 */
+    /* 메인(왼쪽) 이미지 비율 조정 */
     .hero-left img {
+        width: 100%;
         height: auto;
-        aspect-ratio: 16 / 9;         /* 기존 360px 고정보다 안전 */
+        aspect-ratio: 16 / 9;
     }
 
-    /* '사진 모두 보기' 버튼이 겹치지 않게 고정 해제 */
+    /* 서브(오른쪽) 이미지 영역 설정 */
+    .hero-right {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 모바일에서도 2열로 보기 좋게 */
+        gap: 8px;
+        grid-auto-rows: auto; /* 높이 자동 조절 */
+    }
+
+    /* 서브 이미지 각각의 크기 설정 */
+    .hero-right img {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+    }
+
+    /* '사진 모두 보기' 버튼 위치 잡기 */
     .hero-more {
-        position: static;             /* ✅ 겹침 방지 */
-        display: inline-block;
+        position: static;
+        display: block;
+        text-align: center;
         margin-top: 8px;
         box-shadow: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 본문 2단 → 1단 변경 */
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
     }
 }
