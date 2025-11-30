@@ -8,7 +8,7 @@
 <head>
     <title><c:out value="${info != null ? info.title : accommodation.name}"/> - 숙소 상세</title>
     <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/auth.css"><!-- (모달 사용 시) -->
+    <link rel="stylesheet" href="/css/auth.css">
     <link rel="stylesheet" href="/css/accommodationInfo.css">
 
     <!-- Flatpickr (예약 달력) -->
@@ -251,29 +251,38 @@
 
         const ACC_ID = '${accommodation.id}';
         const fp = flatpickr('#checkInInput', {
-            plugins: [new rangePlugin({input: '#checkOutInput'})],
+            plugins: [new rangePlugin({ input: '#checkOutInput' })],
             minDate: 'today',
             dateFormat: 'Y-m-d',
-            disable: [], // ⬅️ 초기화(갱신 안정화)
+            appendTo: document.body,          // 레이어를 body로(클리핑/터치 씹힘 방지)
+            disable: [],
+            clickOpens: true,
+            disableMobile: true,              // 모바일에서도 flatpickr UI 강제
+
             onChange(selectedDates, _, instance) {
+                const outEl = document.getElementById('checkOutInput');
+
                 if (selectedDates.length === 2) {
+                    // 체크인/아웃 둘 다 선택 완료 → hidden 주입
                     const fmt = d => instance.formatDate(d, 'Y-m-d');
-                    document.getElementById('checkInHidden').value = fmt(selectedDates[0]);
+                    document.getElementById('checkInHidden').value  = fmt(selectedDates[0]);
                     document.getElementById('checkOutHidden').value = fmt(selectedDates[1]);
-                } else if (selectedDates.length === 1) {
+                } else if (selectedDates.length === 1 && outEl) {
+                    // 체크인만 선택된 시점 → 체크아웃 입력 아래에서 달력 계속 선택하도록 위치/오픈
+                    instance.set('positionElement', outEl);   // 달력 앵커를 체크아웃 인풋으로 변경
+                    // iOS 사파리 터치 이벤트 순서 이슈 회피
+                    setTimeout(() => instance.open(), 0);
+
+                    // 체크아웃 hidden은 초기화
                     document.getElementById('checkOutHidden').value = '';
                 }
             },
-            onReady(_, __, instance) {
-                refreshDisabled(instance);
-            },
-            onMonthChange(_, __, instance) {
-                refreshDisabled(instance);
-            },
-            onYearChange(_, __, instance) {
-                refreshDisabled(instance);
-            }
+
+            onReady(_, __, instance)   { refreshDisabled(instance); },
+            onMonthChange(_, __, inst) { refreshDisabled(inst); },
+            onYearChange(_, __, inst)  { refreshDisabled(inst); }
         });
+
 
         async function refreshDisabled(instance) {
             const y = instance.currentYear;

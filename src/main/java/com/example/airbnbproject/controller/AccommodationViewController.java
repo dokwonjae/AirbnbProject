@@ -60,9 +60,7 @@ public class AccommodationViewController {
         List<String> imagePaths = new ArrayList<>();
         if (info != null && info.getImages() != null) {
             for (AccommodationInfoImage image : info.getImages()) {
-                if (image.getImageData() != null && image.getImageData().length > 0) {
-                    imagePaths.add("data:image/jpeg;base64," + encodeImage(image.getImageData()));
-                } else if (image.getImageUrl() != null) {
+                if (image.getImageUrl() != null && !image.getImageUrl().isEmpty()) {
                     imagePaths.add(image.getImageUrl());
                 }
             }

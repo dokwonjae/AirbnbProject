@@ -19,10 +19,6 @@ public class AccommodationInfoImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] imageData;
-
     @Column(length = 1000)
     private String imageUrl;
 

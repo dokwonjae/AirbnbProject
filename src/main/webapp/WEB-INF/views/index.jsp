@@ -21,14 +21,12 @@
     </c:if>
 
     <%
-        // 태그키와 라벨을 나란히 정의
         String[] tagKeys   = {"view","beach","camp","park","countryside","pool","tiny","trending","unique"};
         String[] tagLabels = {"최고의 전망","해변 근처","캠핑장","국립공원","한적한 시골","멋진 수영장","초소형 주택","인기 급상승","기상천외한 숙소"};
         request.setAttribute("tagKeys", tagKeys);
         request.setAttribute("tagLabels", tagLabels);
     %>
 
-    <!-- 카테고리 바 (tags 기반 필터) -->
     <div class="category-bar">
         <c:forEach var="i" begin="0" end="8">
             <c:set var="key"   value="${tagKeys[i]}"/>

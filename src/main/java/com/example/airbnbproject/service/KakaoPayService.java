@@ -51,7 +51,7 @@ public class KakaoPayService {
 
     /** 결제 준비 */
     @Transactional
-    public String kakaoPayReady(KakaoPayRequestDto dto, String userId, HttpSession session) {
+    public KakaoPayReadyResponseDto kakaoPayReady(KakaoPayRequestDto dto, String userId, HttpSession session) {
         Long reservationId = dto.getReservationId();
 
         // 상태 검증 & (필요 시) RESERVED 셋팅 — 낙관락 재시도
@@ -97,7 +97,7 @@ public class KakaoPayService {
         if (body != null && body.getTid() != null) {
             session.setAttribute("tid", body.getTid());
             session.setAttribute("reservationId", reservationId);
-            return body.getNextRedirectPcUrl();
+            return body;
         }
         throw new IllegalStateException("카카오페이 결제 준비 실패");
     }
